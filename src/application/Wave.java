@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class Wave {
 	
+	private Field field;
+	
 	private ArrayList<Zombie> enemies;
 	
 	
@@ -11,11 +13,7 @@ public class Wave {
 		this.enemies = enemies;
 	}
 	
-	public void addEnemy(Zombie enemy) {
-		enemies.add(enemy);
-	}
-	
-	public void call(long now, Field field) {
+	public void call(long now) {
 		for (Zombie e : enemies) {
 			e.call(now);
 			field.addEnemy(e);
