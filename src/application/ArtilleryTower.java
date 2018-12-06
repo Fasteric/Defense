@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 
 public class ArtilleryTower {
 	
-	private static Image[] tower;
+	private static Image[] artilleryTower;
 	
 	private static Image[][] firingAnimation;
 	private static int firingAnimationLength = 10;
@@ -33,7 +33,7 @@ public class ArtilleryTower {
 	private double radiusX;
 	private double radiusY;
 	
-	private boolean isConstructed;
+	//private boolean isConstructed;
 	
 	private int maxFiringFrameHold = 5;
 	private int firingFrameHold;
@@ -54,7 +54,7 @@ public class ArtilleryTower {
 		this.position = position;
 		this.direction = direction;
 		
-		this.isConstructed = false;
+		//this.isConstructed = false;
 		
 		this.firingCooldown = maxFiringCooldown;
 		this.isFiring = false;
@@ -62,28 +62,28 @@ public class ArtilleryTower {
 	
 	
 	public void tick(long now, GraphicsContext gc) {
-		
+		/*
 		if (!isConstructed) {
 			construct(gc);
 		}
-		
+		*/
 		if (firingCooldown > 0) {
 			firingCooldown--;
 		}
 		else {
-			commenceFiringSequence(field);
+			commenceFiringSequence();
 		}
 		
 		draw(gc);
 		
 	}
-	
+	/*
 	public void construct(GraphicsContext gc) {
-		gc.drawImage(tower[direction], position.getX() - width / 2, position.getY() - height);
+		gc.drawImage(artilleryTower[direction], position.getX() - width / 2, position.getY() - height);
 		isConstructed = true;
 	}
-	
-	private void commenceFiringSequence(Field field) {
+	*/
+	private void commenceFiringSequence() {
 		
 		if (firingCooldown > 0) {
 			return; // should not be called
@@ -141,7 +141,7 @@ public class ArtilleryTower {
 			gc.drawImage(firingAnimation[direction][firingFrameIndex], drawX, drawY);
 		}
 		else {
-			gc.drawImage(tower[direction], drawX, drawY);
+			gc.drawImage(artilleryTower[direction], drawX, drawY);
 		}
 	}
 	

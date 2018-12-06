@@ -42,9 +42,10 @@ public class LineProcesser {
 	}
 	
 	
-	public int findNextInt() {
+	public int readNextInt() throws EndOfLineException {
 		int next = 0;
 		skipUntilNumber();
+		if (isEnd()) throw new EndOfLineException("Attempt to read int but not found");
 		while (isNumber(current())) {
 			next *= 10;
 			next += current() - '0';
@@ -52,23 +53,15 @@ public class LineProcesser {
 		return next;
 	}
 	
-	public String findNextWord() {
+	public String readNextWord() throws EndOfLineException {
 		skipUntilAlphabet();
+		if (isEnd()) throw new EndOfLineException("Attempt to read word but not found");
 		int beginIndex = getIndex();
 		while (isAlphabet(current())) {
 			toNextIndex();
 		}
 		int endIndex = getIndex();
 		return line.substring(beginIndex, endIndex - beginIndex);
-	}
-	
-	public Point2D findNextPoint2D() {
-		skipUntil('(');
-		int x = findNextInt();
-		skipUntil(',');
-		int y = findNextInt();
-		skipUntil(')');
-		return new Point2D(x, y);
 	}
 	
 	
@@ -94,7 +87,7 @@ public class LineProcesser {
 	}
 	
 	public boolean isNumber(char c) {
-		return c >= '0' && c <= '9';
+		return c >= '0' && c <= '9' || c == '.';
 	}
 	
 	public boolean isAlphabet(char c) {

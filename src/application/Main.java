@@ -22,7 +22,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		
-		MouseEventListener mouse = new MouseEventListener();
+		MouseListener mouse = new MouseListener();
 		
 		canvas.setOnMouseMoved(mouse);
 		canvas.setOnMousePressed(mouse);
@@ -30,7 +30,7 @@ public class Main extends Application {
 		
 		pane.getChildren().add(canvas);
 		
-		AnimationTimer ticker = new Ticker(canvas);
+		AnimationTimer ticker = new Ticker(canvas, mouse);
 		ticker.start();
 		
 		Scene scene = new Scene(pane, 1280, 720);

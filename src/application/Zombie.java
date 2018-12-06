@@ -1,7 +1,6 @@
 package application;
 
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
@@ -9,7 +8,7 @@ import javafx.scene.effect.ColorInput;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-public class Zombie extends Canvas implements Comparable<Zombie> {
+public class Zombie implements Comparable<Zombie> {
 	
 	/*** Field ***/
 	
@@ -17,9 +16,9 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	private static Image[][] walkingAnimation;
 	private static int walkingAnimationLength = 1;
-	
+	/*
 	private static Blend hurt; // just hypothesis
-	
+	*/
 	static {
 		
 		walkingAnimation = new Image[8][walkingAnimationLength];
@@ -29,8 +28,8 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 			}
 		}
 		
-		double x = 0, y = 0, w = 0, h = 0;
-		hurt = new Blend(BlendMode.DARKEN, null, new ColorInput(x, y, w, h, new Color(1/2d, 1/8d, 1/8d, 1/1d)));
+		//double x = 0, y = 0, w = 0, h = 0;
+		//hurt = new Blend(BlendMode.DARKEN, null, new ColorInput(x, y, w, h, new Color(1/2d, 1/8d, 1/8d, 1/1d)));
 		
 	}
 	
@@ -59,7 +58,7 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	private int walkingFrameImageIndex;
 	
 	private long callingTime;
-	private long spawnTime;
+	private int spawnTime;
 	private boolean isSpawned = false;
 	
 	private boolean isInvaded = false;
@@ -69,7 +68,7 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	/*** Constructor ***/
 	
-	public Zombie(Field field, Path path, double pathShift, long spawnTime) {
+	public Zombie(Field field, Path path, double pathShift, int spawnTime) {
 		this.field = field;
 		
 		this.path = path;
@@ -203,6 +202,10 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	public boolean isSpawned() {
 		return isSpawned;
+	}
+	
+	public int getSpawnTime() {
+		return spawnTime;
 	}
 
 }

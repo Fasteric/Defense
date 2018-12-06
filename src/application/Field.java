@@ -9,96 +9,161 @@ import java.util.ArrayList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 
 public class Field {
 	
 	private static Image fieldImage;
+	private static Image waveCallEnable;
+	private static Image waveCallDisable;
 	
 	static {
 		//fieldImage = new Image("");
 	}
 	
 	private ArrayList<Zombie> enemiesOnField;
-	private ArrayList<ArtilleryTower> towersOnField;
+	private ArrayList<Tower> towersOnField;
 	private ArrayList<PrimedTnt> projectilesOnField;
-
-	private ArrayList<Point2D> buildablePosition = new ArrayList<Point2D>();
 	
 	private ArrayList<Path> storedPaths = new ArrayList<Path>();
 	private ArrayList<Wave> storedWaves = new ArrayList<Wave>();
 	
-	private int currentWave;
+	private int currentWave = 0;
+	private boolean isNextWaveAvailable = true;
+	private boolean isLightningAvailable;
+	private boolean isLightningActive;
+	private boolean isCleared = false;
 	
 	public int money = 500;
 	public int health = 20;
 	
 	
-	public Field(String file) {
+	/*** Constructor ***/
+	
+	public Field(String file) throws InvalidStageFormatException {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line = br.readLine();
 			while (line != null) {
 				char mode = line.charAt(0);
-				if (mode == 't') initBuildablePosition(line);
-				else if (mode == 'p') initPath(line);
-				else if (mode == 'w') initWave(line);
+				if (mode == 't') setupTower(line);
+				else if (mode == 'p') setupStoredPaths(line);
+				else if (mode == 'w') setupStoredWaves(line);
+				else {
+					br.close();
+					throw new InvalidStageFormatException("unknown mode");
+				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
+			br.close();
+		}
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		currentWave = 0;
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		catch (EndOfLineException e) {
+			e.printStackTrace();
+			throw new InvalidStageFormatException("expect something but found nothing");
+		}
 	}
 	
-	private void initBuildablePosition(String line) {
+	private void setupTower(String line) throws EndOfLineException {
 		LineProcesser lp = new LineProcesser(line, 1);
+		lp.skipUntilNumber();
 		while (!lp.isEnd()) {
-			lp.skipUntil('(');
-			if (lp.isEnd()) return;
-			buildablePosition.add(lp.findNextPoint2D());
+			int direction = lp.readNextInt();
+			int positionX = lp.readNextInt();
+			int positionY = lp.readNextInt();
+			Point2D position = new Point2D(lp.readNextInt(), lp.readNextInt());
+			towersOnField.add(new NullTower(this, position, direction));
+			lp.skipUntilNumber();
 		}
 	}
 	
-	private void initPath(String line) {
+	private void setupStoredPaths(String line) throws EndOfLineException {
 		LineProcesser lp = new LineProcesser(line, 1);
-		ArrayList<Point2D> pathPoints = new ArrayList<>();
+		ArrayList<Point2D> nodes = new ArrayList<>();
+		lp.skipUntilNumber();
 		while (!lp.isEnd()) {
-			lp.skipUntil('(');
-			if (lp.isEnd());
-			pathPoints.add(lp.findNextPoint2D());
+			int nodeX = lp.readNextInt();
+			int nodeY = lp.readNextInt();
+			Point2D node = new Point2D(nodeX, nodeY);
+			nodes.add(node);
+			lp.skipUntilNumber();
 		}
-		Path path = new Path(pathPoints);
-		storedPaths.add(path);
+		storedPaths.add(new Path(nodes));
 	}
 	
-	private void initWave(String line) {
+	private void setupStoredWaves(String line) throws EndOfLineException {
 		LineProcesser lp = new LineProcesser(line, 1);
 		ArrayList<Zombie> enemies = new ArrayList<>();
+		lp.skipUntilNumber();
 		while (!lp.isEnd()) {
-			lp.skipUntil('(');
-			if (lp.isEnd()) break;
-			String enemyType = lp.findNextWord();
-			lp.skipUntil(',');
-			int pathIndex = lp.findNextInt();
-			lp.skipUntil(',');
-			int pathShift = lp.findNextInt();
-			lp.skipUntil(',');
-			int spawnTime = lp.findNextInt();
-			lp.skipUntil(')');
-			Zombie enemy = spawnEnemy(enemyType, storedPaths.get(pathIndex), pathShift, spawnTime);
+			int spawnTime = lp.readNextInt();
+			String type = lp.readNextWord();
+			int pathIndex = lp.readNextInt();
+			int pathShift = lp.readNextInt();
+			Zombie enemy = createEnemy(type, storedPaths.get(pathIndex), pathShift, spawnTime);
 			enemies.add(enemy);
 		}
-		Wave wave = new Wave(enemies);
-		storedWaves.add(wave);
+		storedWaves.add(new Wave(enemies));
 	}
 	
-	private Zombie spawnEnemy(String enemyType, Path path, int pathShift, int spawnTime) {
+	private Zombie createEnemy(String enemyType, Path path, int pathShift, int spawnTime) {
+		if (enemyType == "Zombie") {
+			
+		}
 		return new Zombie(this, path, pathShift, spawnTime);
+	}
+	
+	
+	/*** Tick ***/
+	
+	public void tick(long now, GraphicsContext gc, MouseListener mouse) {
+		
+		// field
+		
+		gc.drawImage(fieldImage, 0, 0);
+		
+		if (storedWaves.get(currentWave).isCompleted(now)) {
+			isNextWaveAvailable = true;
+		}
+		
+		if (isNextWaveAvailable) gc.drawImage(waveCallEnable, 1180, 620);
+		else gc.drawImage(waveCallDisable, 1180, 620);
+		
+		// mouse
+		
+		Point2D hoverPosition = mouse.getHoverPosition();
+		interpretHover(hoverPosition);
+		
+		if (mouse.isClicked()) {
+			Point2D[] clickInfo = mouse.getClickInfo();
+			interpretClick(clickInfo[0], clickInfo[1]);
+		}
+		
+		// update
+		
+		for (Zombie enemy : enemiesOnField) {
+			enemy.tick(now, gc);
+		}
+		
+		for (Tower tower : towersOnField) {
+			tower.tick(now, gc);
+		}
+		
+		for (PrimedTnt projectile : projectilesOnField) {
+			projectile.tick(now, gc);
+		}
+		
+	}
+	
+	public void interpretHover(Point2D hoverPosition) {
+		
+	}
+	
+	private void interpretClick(Point2D pressPosition, Point2D releasePosition) {
+		
 	}
 	
 	
@@ -112,14 +177,8 @@ public class Field {
 		enemiesOnField.remove(enemy);
 	}
 	
-	public ArrayList<ArtilleryTower> getTowersOnField() {
+	public ArrayList<Tower> getTowersOnField() {
 		return towersOnField;
-	}
-	public void addTower(ArtilleryTower tower) {
-		towersOnField.add(tower);
-	}
-	public void removeTower(ArtilleryTower tower) {
-		towersOnField.remove(tower);
 	}
 	
 	public ArrayList<PrimedTnt> getProjectileOnField() {
@@ -132,53 +191,19 @@ public class Field {
 		projectilesOnField.remove(projectile);
 	}
 	
-	
-	public void tick(long now, GraphicsContext gc, MouseEvent event) {
-		
-		gc.drawImage(fieldImage, 0, 0);
-		
-		mouseEventListener(now, event);
-		
-		for (Zombie enemy : enemiesOnField) {
-			enemy.tick(now, gc);
-		}
-		
-		for (ArtilleryTower tower : towersOnField) {
-			tower.tick(now, gc);
-		}
-		
-		for (PrimedTnt projectile : projectilesOnField) {
-			projectile.tick(now, gc);
-		}
-		
-	}
-	
-	
-	public void mouseEventListener(long now, MouseEvent event) {
-		Point2D mousePosition = new Point2D(event.getX(), event.getY());
-		for (Point2D p : buildablePosition) {
-			Point2D different = PointOperations.different(p, mousePosition);
-			double distant = PointOperations.getSize(different);
-			if (distant < 100) {
-				// did hover
-				//highlightbuild(p);
-				break;
-			}
-		}
-	}
-	
-	
 	public void invaded(Zombie enemy) {
 		health--;
 	}
 	
-	public void callNextWave(long now) {
-		if (currentWave > storedWaves.size()) {
-			// endGame
-			return;
-		}
-		storedWaves.get(currentWave).call(now);
+	
+	private void callNextWave(long now) {
+		if (isLastWave()) return; // failsafe
 		currentWave++;
+		storedWaves.get(currentWave).call(now);
+		isNextWaveAvailable = false;
+	}
+	private boolean isLastWave() {
+		return currentWave + 1 >= storedWaves.size();
 	}
 	
 }
