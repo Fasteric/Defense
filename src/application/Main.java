@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 public class Main extends Application {
@@ -20,14 +22,15 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		
+		MouseEventListener mouse = new MouseEventListener();
+		
+		canvas.setOnMouseMoved(mouse);
+		canvas.setOnMousePressed(mouse);
+		canvas.setOnMouseReleased(mouse);
+		
 		pane.getChildren().add(canvas);
 		
-		AnimationTimer ticker = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				GraphicsContext gc = canvas.getGraphicsContext2D();
-			}
-		};
+		AnimationTimer ticker = new Ticker(canvas);
 		ticker.start();
 		
 		Scene scene = new Scene(pane, 1280, 720);

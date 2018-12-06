@@ -61,11 +61,6 @@ public class ArtilleryTower {
 	}
 	
 	
-	public void construct(GraphicsContext gc) {
-		gc.drawImage(tower[direction], position.getX() - width / 2, position.getY() - height);
-		isConstructed = true;
-	}
-	
 	public void tick(long now, GraphicsContext gc) {
 		
 		if (!isConstructed) {
@@ -81,6 +76,11 @@ public class ArtilleryTower {
 		
 		draw(gc);
 		
+	}
+	
+	public void construct(GraphicsContext gc) {
+		gc.drawImage(tower[direction], position.getX() - width / 2, position.getY() - height);
+		isConstructed = true;
 	}
 	
 	private void commenceFiringSequence(Field field) {
@@ -137,13 +137,14 @@ public class ArtilleryTower {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
 		
-		if (!isFiring) {
-			gc.drawImage(tower[direction], drawX, drawY);
-		}
-		else {
+		if (isFiring) {
 			gc.drawImage(firingAnimation[direction][firingFrameIndex], drawX, drawY);
 		}
+		else {
+			gc.drawImage(tower[direction], drawX, drawY);
+		}
 	}
+	
 	
 	/*** Utilities ***/
 	

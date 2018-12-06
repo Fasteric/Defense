@@ -13,17 +13,19 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	/*** Field ***/
 	
-	private static Image[][] walkAnimation;
-	private static int walkAnimationLength = 1;
+	private static Image[] stand;
+	
+	private static Image[][] walkingAnimation;
+	private static int walkingAnimationLength = 1;
 	
 	private static Blend hurt; // just hypothesis
 	
 	static {
 		
-		walkAnimation = new Image[8][walkAnimationLength];
+		walkingAnimation = new Image[8][walkingAnimationLength];
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < walkAnimationLength; j++) {
-				walkAnimation[i][j] = new Image("elfmaker.png", 5, 5, true, true);
+			for (int j = 0; j < walkingAnimationLength; j++) {
+				walkingAnimation[i][j] = new Image("elfmaker.png", 5, 5, true, true);
 			}
 		}
 		
@@ -41,24 +43,26 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	private int direction;
 	
 	private Path path;
-	private int pathIndex;
+	private int pathIndex = 0;
 	private double pathShift;
 	
 	private double maxHealth = 20;
-	private double health;
+	private double health = maxHealth;
 	
 	private double speed = 50;
 	private Point2D subpathMomentum;
 	private int subpathTickRemaining;
 	private boolean isSubpathCompleted;
 	
-	private int walkFrameHold = 20;
-	private int walkFrameRemaining;
-	private int walkFrameImageIndex;
+	private int walkingFrameHold = 20;
+	private int walkingFrameRemaining;
+	private int walkingFrameImageIndex;
 	
 	private long callingTime;
 	private long spawnTime;
-	private boolean isSpawned;
+	private boolean isSpawned = false;
+	
+	private boolean isInvaded = false;
 	
 	private long last;
 	
@@ -76,6 +80,8 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 		
 		this.spawnTime = spawnTime;
 		this.isSpawned = false;
+		
+		this.isInvaded = false;
 	}
 	
 	public Point2D getPosition() {
@@ -91,21 +97,28 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	public void tick(long now, GraphicsContext gc) {
 		
+		if (isInvaded) return; // failsafe should not be call
+		
 		if (!isSpawned) {
 			if (now < callingTime + spawnTime) return;
-			spawn();
-			isSubpathCompleted = true;
+			else spawn();
 		}
 		
 		if (isSubpathCompleted) {
-			updateDestination();
-			updateDirection();
-			isSubpathCompleted = false;
+			if (pathIndex >= path.size()) {
+				invading();
+				return;
+			}
+			else {
+				updateDestination();
+				updateDirection();
+				isSubpathCompleted = false;
+			}
 		}
 		
 		updatePosition();
 		
-		commenceWalkingSequence();
+		commenceWalkingingSequence();
 		
 		draw(gc);
 		
@@ -116,9 +129,10 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	private void spawn() {
 		position = path.getCoordinate(0, pathShift);
 		pathIndex = 0; // will be changed to 1 at 'updateDestination'
-		walkFrameRemaining = walkFrameHold;
-		walkFrameImageIndex = 0;
+		walkingFrameRemaining = walkingFrameHold;
+		walkingFrameImageIndex = 0;
 		isSpawned = true;
+		isSubpathCompleted = true;
 	}
 	
 	private void updateDestination() {
@@ -153,25 +167,32 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 		}
 	}
 	
-	private void commenceWalkingSequence() {
-		if (walkFrameRemaining > 0) {
-			walkFrameRemaining--;
+	private void commenceWalkingingSequence() {
+		if (walkingFrameRemaining > 0) {
+			walkingFrameRemaining--;
 		}
 		else {
-			walkFrameImageIndex = (walkFrameImageIndex + 1) % walkAnimationLength;
-			walkFrameRemaining = walkFrameHold;
+			walkingFrameImageIndex = (walkingFrameImageIndex + 1) % walkingAnimationLength;
+			walkingFrameRemaining = walkingFrameHold;
 		}
+	}
+	
+	private void invading() {
+		field.invaded(this);
+		field.removeEnemy(this);
+		isInvaded = true;
 	}
 	
 	
 	private void draw(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
-		gc.drawImage(walkAnimation[direction][walkFrameImageIndex], drawX, drawY);
+		gc.drawImage(walkingAnimation[direction][walkingFrameImageIndex], drawX, drawY);
 	}
 	
 	
 	/*** Utility ***/
+	
 	public int compareTo(Zombie another) {
 		return Long.compare(spawnTime, another.spawnTime);
 	}

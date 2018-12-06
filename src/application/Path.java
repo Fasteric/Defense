@@ -23,6 +23,10 @@ public class Path {
 		}
 	}
 	
+	public int size() {
+		return nodes.size();
+	}
+	
 	public Point2D getNode(int index) {
 		return nodes.get(index);
 	}

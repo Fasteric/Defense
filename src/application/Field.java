@@ -8,14 +8,22 @@ import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 
 public class Field {
 	
-	public ArrayList<Zombie> enemiesOnField;
-	public ArrayList<ArtilleryTower> towersOnField;
-	public ArrayList<PrimedTnt> projectilesOnField;
+	private static Image fieldImage;
+	
+	static {
+		//fieldImage = new Image("");
+	}
+	
+	private ArrayList<Zombie> enemiesOnField;
+	private ArrayList<ArtilleryTower> towersOnField;
+	private ArrayList<PrimedTnt> projectilesOnField;
 
-	private ArrayList<Point2D> towerPosition = new ArrayList<Point2D>();
+	private ArrayList<Point2D> buildablePosition = new ArrayList<Point2D>();
 	
 	private ArrayList<Path> storedPaths = new ArrayList<Path>();
 	private ArrayList<Wave> storedWaves = new ArrayList<Wave>();
@@ -32,9 +40,9 @@ public class Field {
 			String line = br.readLine();
 			while (line != null) {
 				char mode = line.charAt(0);
-				if (mode == 't') processTower(line);
-				else if (mode == 'p') processPath(line);
-				else if (mode == 'w') processWave(line);
+				if (mode == 't') initBuildablePosition(line);
+				else if (mode == 'p') initPath(line);
+				else if (mode == 'w') initWave(line);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -47,18 +55,17 @@ public class Field {
 		currentWave = 0;
 	}
 	
-	private void processTower(String line) {
+	private void initBuildablePosition(String line) {
 		LineProcesser lp = new LineProcesser(line, 1);
 		while (!lp.isEnd()) {
 			lp.skipUntil('(');
 			if (lp.isEnd()) return;
-			towerPosition.add(lp.findNextPoint2D());
+			buildablePosition.add(lp.findNextPoint2D());
 		}
 	}
 	
-	private void processPath(String line) {
+	private void initPath(String line) {
 		LineProcesser lp = new LineProcesser(line, 1);
-		int pathIndex = lp.findNextInt();
 		ArrayList<Point2D> pathPoints = new ArrayList<>();
 		while (!lp.isEnd()) {
 			lp.skipUntil('(');
@@ -69,9 +76,8 @@ public class Field {
 		storedPaths.add(path);
 	}
 	
-	private void processWave(String line) {
+	private void initWave(String line) {
 		LineProcesser lp = new LineProcesser(line, 1);
-		int waveIndex = lp.findNextInt();
 		ArrayList<Zombie> enemies = new ArrayList<>();
 		while (!lp.isEnd()) {
 			lp.skipUntil('(');
@@ -127,20 +133,52 @@ public class Field {
 	}
 	
 	
-	public void tick(long now, GraphicsContext gc) {
+	public void tick(long now, GraphicsContext gc, MouseEvent event) {
+		
+		gc.drawImage(fieldImage, 0, 0);
+		
+		mouseEventListener(now, event);
+		
 		for (Zombie enemy : enemiesOnField) {
 			enemy.tick(now, gc);
 		}
+		
 		for (ArtilleryTower tower : towersOnField) {
 			tower.tick(now, gc);
 		}
+		
 		for (PrimedTnt projectile : projectilesOnField) {
 			projectile.tick(now, gc);
 		}
+		
+	}
+	
+	
+	public void mouseEventListener(long now, MouseEvent event) {
+		Point2D mousePosition = new Point2D(event.getX(), event.getY());
+		for (Point2D p : buildablePosition) {
+			Point2D different = PointOperations.different(p, mousePosition);
+			double distant = PointOperations.getSize(different);
+			if (distant < 100) {
+				// did hover
+				//highlightbuild(p);
+				break;
+			}
+		}
+	}
+	
+	
+	public void invaded(Zombie enemy) {
+		health--;
 	}
 	
 	public void callNextWave(long now) {
+		if (currentWave > storedWaves.size()) {
+			// endGame
+			return;
+		}
 		storedWaves.get(currentWave).call(now);
+		currentWave++;
 	}
 	
 }

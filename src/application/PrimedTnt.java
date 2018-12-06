@@ -39,17 +39,22 @@ public class PrimedTnt {
 	
 	
 	public void tick(long now, GraphicsContext gc) {
+		
 		if (isExploded) return;
 		
 		tickRemaining--;
+		
 		if (tickRemaining < 0) {
 			explode();
 			return;
 		}
+		else {
+			position = PointOperations.add(position, horizontalMomentum);
+			isLit = tickRemaining % 30 < 15;
+		}
 		
-		position = PointOperations.add(position, horizontalMomentum);
-		isLit = tickRemaining % 30 >= 15;
 		draw(gc);
+		
 	}
 	
 	private void draw(GraphicsContext gc) {
