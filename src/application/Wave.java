@@ -4,17 +4,21 @@ import java.util.ArrayList;
 
 public class Wave {
 	
-	private ArrayList<Zombie> wave;
+	private ArrayList<Zombie> enemies;
 	
 	
-	public Wave(ArrayList<Zombie> wave) {
-		this.wave = wave;
+	public Wave(ArrayList<Zombie> enemies) {
+		this.enemies = enemies;
 	}
 	
-	public void call(long callingTime) {
-		for (Zombie e : wave) {
-			e.call(callingTime);
-			// someList.add(e);
+	public void addEnemy(Zombie enemy) {
+		enemies.add(enemy);
+	}
+	
+	public void call(long now, Field field) {
+		for (Zombie e : enemies) {
+			e.call(now);
+			field.addEnemy(e);
 		}
 	}
 	

@@ -16,6 +16,8 @@ public class PrimedTnt {
 	private static double width;
 	private static double height;
 	
+	private Field field;
+	
 	private Point2D position;
 	private Point2D destination;
 	private Point2D horizontalMomentum;
@@ -26,7 +28,8 @@ public class PrimedTnt {
 	private boolean isExploded;
 	
 	
-	public PrimedTnt(Point2D position, Point2D destination) {
+	public PrimedTnt(Field field, Point2D position, Point2D destination) {
+		this.field = field;
 		this.position = position;
 		this.destination = destination;
 		this.horizontalMomentum = PointOperations.different(position, destination);
@@ -36,11 +39,14 @@ public class PrimedTnt {
 	
 	
 	public void tick(long now, GraphicsContext gc) {
+		if (isExploded) return;
+		
 		tickRemaining--;
 		if (tickRemaining < 0) {
 			explode();
 			return;
 		}
+		
 		position = PointOperations.add(position, horizontalMomentum);
 		isLit = tickRemaining % 30 >= 15;
 		draw(gc);
@@ -63,8 +69,9 @@ public class PrimedTnt {
 	}
 	
 	private void explode() {
-		if (isExploded) return;
-		// dosomething
+		if (isExploded) return; // make sure it only explode once
+		// doDamage
+		field.removeProjectile(this);
 		isExploded = true;
 	}
 

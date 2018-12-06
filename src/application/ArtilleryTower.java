@@ -9,8 +9,7 @@ import javafx.scene.image.Image;
 
 public class ArtilleryTower {
 	
-	private static Image[][] constructingAnimation;
-	private static int constructingAnimationLength = 1;
+	private static Image[] tower;
 	
 	private static Image[][] firingAnimation;
 	private static int firingAnimationLength = 10;
@@ -26,17 +25,15 @@ public class ArtilleryTower {
 	private static double width;
 	private static double height;
 	
+	private Field field;
+	
 	private Point2D position;
 	private int direction;
 	
 	private double radiusX;
 	private double radiusY;
 	
-	private int maxConstructingFrameHold = 20;
-	private int constructingFrameHold;
-	private int constructingFrameIndex;
 	private boolean isConstructed;
-	private boolean isConstructing;
 	
 	private int maxFiringFrameHold = 5;
 	private int firingFrameHold;
@@ -51,62 +48,54 @@ public class ArtilleryTower {
 	private Point2D primedTntDestination;
 	
 	
-	public ArtilleryTower(Point2D position, int direction) {
+	public ArtilleryTower(Field field, Point2D position, int direction) {
+		this.field = field;
+		
 		this.position = position;
 		this.direction = direction;
-
+		
 		this.isConstructed = false;
-		this.isConstructing = false;
-		this.firingCooldown = 0;
+		
+		this.firingCooldown = maxFiringCooldown;
+		this.isFiring = false;
 	}
 	
 	
-	public void tick(long now, GraphicsContext gc, ArrayList<Zombie> enemiesOnField) {
-		
-		if (firingCooldown > 0) {
-			firingCooldown--;
-			return;
-		}
+	public void construct(GraphicsContext gc) {
+		gc.drawImage(tower[direction], position.getX() - width / 2, position.getY() - height);
+		isConstructed = true;
+	}
+	
+	public void tick(long now, GraphicsContext gc) {
 		
 		if (!isConstructed) {
 			construct(gc);
-			return;
 		}
 		
-		fire(gc, enemiesOnField);
-		
-	}
-	
-	private void construct(GraphicsContext gc) {
-		if (!isConstructing) {
-			isConstructing = true;
-			constructingFrameIndex = 0;
-			draw(gc, constructingAnimation[direction][0]);
-			constructingFrameHold = maxConstructingFrameHold;
-		}
-		if (constructingFrameHold > 0) {
-			constructingFrameHold--;
-			return;
-		}
-		constructingFrameIndex++;
-		if (constructingFrameIndex < constructingAnimationLength) {
-			draw(gc, constructingAnimation[direction][constructingFrameIndex]);
-			constructingFrameHold = maxConstructingFrameHold;
+		if (firingCooldown > 0) {
+			firingCooldown--;
 		}
 		else {
-			isConstructed = true;
-			isConstructing = false;
+			commenceFiringSequence(field);
 		}
+		
+		draw(gc);
+		
 	}
 	
-	
-	private void fire(GraphicsContext gc, ArrayList<Zombie> enemiesOnField) {
+	private void commenceFiringSequence(Field field) {
+		
+		if (firingCooldown > 0) {
+			return; // should not be called
+		}
 		
 		if (!isFiring) {
-			Zombie enemy = pickEnemyInRange(enemiesOnField);
+			Zombie enemy = pickEnemyInRange(field.getEnemiesOnField());
 			if (enemy != null) {
 				locatePrimedTntDestination(enemy);
-				draw(gc, firingAnimation[direction][0]);
+				firingFrameIndex = 0;
+				firingFrameHold = maxFiringFrameHold;
+				isFiring = true;
 			}
 		}
 		
@@ -116,14 +105,15 @@ public class ArtilleryTower {
 		}
 		
 		firingFrameIndex++;
+		firingFrameHold = maxFiringFrameHold;
+		
+		if (firingFrameIndex == triggeringFrame) {
+			fire(field);
+		}
+
 		if (firingFrameIndex >= firingAnimationLength) {
 			firingCooldown = maxFiringCooldown;
 			isFiring = false;
-		}
-		draw(gc, firingAnimation[direction][firingFrameIndex]);
-		firingFrameHold = maxFiringFrameHold;
-		if (firingFrameIndex == triggeringFrame) {
-			trigger();
 		}
 		
 	}
@@ -135,19 +125,24 @@ public class ArtilleryTower {
 		primedTntDestination = PointOperations.add(enemyPosition, enemyMomentum);
 		firingFrameIndex = 0;
 		firingFrameHold = maxFiringFrameHold;
-		isFiring = true;
 	}
 	
-	private void trigger() {
-		PrimedTnt primeTnt = new PrimedTnt(position, primedTntDestination);
-		// someUpdateList.add(primedTnt);
+	private void fire(Field field) {
+		PrimedTnt primedTnt = new PrimedTnt(field, position, primedTntDestination);
+		field.addProjectile(primedTnt);
 	}
 	
 	
-	private void draw(GraphicsContext gc, Image image) {
+	private void draw(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
-		gc.drawImage(image, drawX, drawY);
+		
+		if (!isFiring) {
+			gc.drawImage(tower[direction], drawX, drawY);
+		}
+		else {
+			gc.drawImage(firingAnimation[direction][firingFrameIndex], drawX, drawY);
+		}
 	}
 	
 	/*** Utilities ***/

@@ -34,6 +34,8 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	private static double width;
 	private static double height;
+	
+	private Field field;
 
 	private Point2D position;
 	private int direction;
@@ -63,7 +65,9 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	/*** Constructor ***/
 	
-	public Zombie(Path path, double pathShift, long spawnTime) {
+	public Zombie(Field field, Path path, double pathShift, long spawnTime) {
+		this.field = field;
+		
 		this.path = path;
 		this.pathIndex = 0;
 		this.pathShift = pathShift;
@@ -100,6 +104,8 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 		}
 		
 		updatePosition();
+		
+		commenceWalkingSequence();
 		
 		draw(gc);
 		
@@ -147,7 +153,7 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 		}
 	}
 	
-	private void draw(GraphicsContext gc) {
+	private void commenceWalkingSequence() {
 		if (walkFrameRemaining > 0) {
 			walkFrameRemaining--;
 		}
@@ -155,6 +161,10 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 			walkFrameImageIndex = (walkFrameImageIndex + 1) % walkAnimationLength;
 			walkFrameRemaining = walkFrameHold;
 		}
+	}
+	
+	
+	private void draw(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
 		gc.drawImage(walkAnimation[direction][walkFrameImageIndex], drawX, drawY);
@@ -168,6 +178,10 @@ public class Zombie extends Canvas implements Comparable<Zombie> {
 	
 	public void call(long callingTime) {
 		this.callingTime = callingTime;
+	}
+	
+	public boolean isSpawned() {
+		return isSpawned;
 	}
 
 }
