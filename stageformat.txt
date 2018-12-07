@@ -1,0 +1,15 @@
+life	20
+money	500
+
+tower	d x y	d x y	d x y	d x y
+
+path	x y	x y	x y	x y	x y
+path	x y	x y	x y	x y	x y	x y
+path	x y	x y
+
+wave
+name pathIndex pathShift spawnTick
+name pathIndex pathShift spawnTick
+name pathIndex pathShift spawnTick
+name pathIndex pathShift spawnTick
+endwave

@@ -37,8 +37,9 @@ public class NullTower extends Tower {
 
 	@Override
 	protected void fire() {
-		
+		// no firing option
 	}
+
 
 	@Override
 	public boolean hover(Point2D hoverPosition) {
@@ -53,6 +54,17 @@ public class NullTower extends Tower {
 	@Override
 	public boolean unclick() {
 		return false;
+	}
+
+
+	@Override
+	public double getRenderPriority() {
+		return position.getY();
+	}
+
+	@Override
+	public int compareTo(Renderable other) {
+		return Double.compare(getRenderPriority(), other.getRenderPriority());
 	}
 
 }

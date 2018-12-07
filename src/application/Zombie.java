@@ -17,7 +17,7 @@ public class Zombie extends Enemy {
 	private static double speed = 10;
 	private static int reward = 20;
 
-	public Zombie(Field field, Path path, double pathShift, long spawnTime) {
+	public Zombie(Field field, Path path, double pathShift, int spawnTime) {
 		super(field, path, pathShift, maxHealth, speed, reward, spawnTime);
 		
 		walkingAnimationLength = 16;
@@ -31,7 +31,7 @@ public class Zombie extends Enemy {
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
 		
-		if (!isSpawned) return;
+		if (spawnTime > 0) return;
 		
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
@@ -40,26 +40,21 @@ public class Zombie extends Enemy {
 		gc.drawImage(walkingAnimation[direction][walkFrameIndex], drawX, drawY);
 	
 	}
-	
-	
+
 	@Override
 	public void damage(Damage damage, double amount) {
-		
+
 	}
 
-	@Override
-	public boolean hover(Point2D hoverPosition) {
-		return false;
-	}
-
-	@Override
-	public boolean click(Point2D pressPosition, Point2D releasePosition) {
-		return false;
-	}
 	
 	@Override
-	public boolean unclick() {
-		return false;
+	public double getRenderPriority() {
+		return position.getY();
+	}
+
+	@Override
+	public int compareTo(Renderable other) {
+		return Double.compare(getRenderPriority(), other.getRenderPriority());
 	}
 	
 }

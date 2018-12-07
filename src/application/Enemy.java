@@ -3,7 +3,7 @@ package application;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Enemy implements Comparable<Enemy> {
+public abstract class Enemy implements Renderable {
 	
 	protected Field field;
 	protected Point2D position;
@@ -84,8 +84,6 @@ public abstract class Enemy implements Comparable<Enemy> {
 		
 	}
 	
-	protected abstract void graphicUpdate(GraphicsContext gc);
-	
 	protected void updateDestination() {
 		Point2D destination = path.getCoordinate(pathIndex, pathShift);
 		Point2D subpath = PointOperations.different(position, destination);
@@ -114,7 +112,7 @@ public abstract class Enemy implements Comparable<Enemy> {
 	}
 	
 	protected void invading() {
-		field.invaded(this);
+		field.invade(this);
 		despawn();
 	}
 	protected void dying() {
@@ -127,22 +125,7 @@ public abstract class Enemy implements Comparable<Enemy> {
 	}
 	
 	
-	/*** Utility ***/
+	protected abstract void graphicUpdate(GraphicsContext gc);
 	
 	public abstract void damage(Damage damage, double amount);
-	
-	public abstract boolean hover(Point2D hoverPosition);
-	
-	public abstract boolean click(Point2D pressPosition, Point2D releasePosition);
-	
-	public abstract boolean unclick();
-	
-	public int compareTo(Enemy another) {
-		return Integer.compare(spawnTime, another.spawnTime);
-	}
-	
-	public int getSpawnTime() {
-		return spawnTime;
-	}
-
 }

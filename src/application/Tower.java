@@ -6,7 +6,7 @@ import java.util.Random;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Tower {
+public abstract class Tower implements Renderable, MouseInteractable {
 	
 	private static Random random = new Random(3);
 	
@@ -41,6 +41,9 @@ public abstract class Tower {
 		
 		lifeCycle = 1;
 	}
+	
+	
+	/*** Tick ***/
 	
 	public void tick(long now, GraphicsContext gc) {
 		logicUpdate(now);
@@ -78,7 +81,7 @@ public abstract class Tower {
 	protected boolean search() {
 		boolean isFound = false;
 		ArrayList<Enemy> enemiesInRange = new ArrayList<>();
-		for (Enemy enemy : field.getEnemiesOnField()) {
+		for (Enemy enemy : field.getEnemyOnField()) {
 			if (isInFiringRange(enemy.getPosition())) {
 				enemiesInRange.add(enemy);
 				isFound = true;
@@ -101,17 +104,8 @@ public abstract class Tower {
 				radiusX * radiusX * radiusY * radiusY;
 	}
 	
-	protected abstract void graphicUpdate(GraphicsContext gc);
-	
 	protected abstract void fire();
 	
-	
-	/*** ***/
-	
-	public abstract boolean hover(Point2D hoverPosition);
-	
-	public abstract boolean click(Point2D pressPosition, Point2D releasePosition);
-	
-	public abstract boolean unclick();
+	protected abstract void graphicUpdate(GraphicsContext gc);
 
 }

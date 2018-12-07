@@ -65,7 +65,7 @@ public class Damage {
 		Enemy nearestEnemy = null;
 		double leastSqrDistant = 0;
 		
-		for (Enemy enemy : field.getEnemiesOnField()) {
+		for (Enemy enemy : field.getEnemyOnField()) {
 			double sqrDistant = calculateSquaredDistant(enemy);
 			if (sqrDistant > sqrRange) continue;
 			if (nearestEnemy == null || sqrDistant < leastSqrDistant) {
@@ -81,7 +81,7 @@ public class Damage {
 		double sqrRange = 900;
 		double maxDamage = 60;
 		
-		for (Enemy enemy : field.getEnemiesOnField()) {
+		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);
 			 if (sqrDistant > sqrRange) continue;
 			 double damage = maxDamage * (1 - sqrDistant / 1200);
@@ -93,7 +93,7 @@ public class Damage {
 		double sqrRange = 10000;
 		double damage = 12;
 		
-		for (Enemy enemy : field.getEnemiesOnField()) {
+		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);
 			 if (sqrDistant > sqrRange) continue;
 			 enemy.damage(this, damage);

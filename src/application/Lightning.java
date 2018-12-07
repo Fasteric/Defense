@@ -4,7 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Lightning {
+public class Lightning implements Renderable {
 	
 	private static Image lightning[];
 	private static int lightningLength = 6;
@@ -33,11 +33,21 @@ public class Lightning {
 		gc.drawImage(lightning[lifeTime / 20], position.getX(), position.getY());
 		
 		if (lifeTime == maxLifeTime) {
-			//field.clearLightning();
+			field.removeRender(this);
 		}
 		
-		lifeTime--;
+		lifeTime++;
 		
+	}
+
+	@Override
+	public double getRenderPriority() {
+		return position.getY() + 100;
+	}
+
+	@Override
+	public int compareTo(Renderable other) {
+		return Double.compare(getRenderPriority(), other.getRenderPriority());
 	}
 
 }

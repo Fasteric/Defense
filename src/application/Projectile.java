@@ -3,7 +3,7 @@ package application;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Projectile {
+public abstract class Projectile implements Renderable {
 	
 	protected Field field;
 	protected Point2D position;
@@ -32,6 +32,8 @@ public abstract class Projectile {
 	}
 	
 	
+	/*** Tick ***/
+	
 	public void tick(long now, GraphicsContext gc) {
 		logicUpdate(now);
 		graphicUpdate(gc);
@@ -53,8 +55,8 @@ public abstract class Projectile {
 		return verticalTrajectory * (1 - t * t);
 	}
 	
-	protected abstract void graphicUpdate(GraphicsContext gc);
-	
 	protected abstract void hit();
+	
+	protected abstract void graphicUpdate(GraphicsContext gc);
 
 }

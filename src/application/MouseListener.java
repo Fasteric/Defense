@@ -57,14 +57,14 @@ public class MouseListener implements EventHandler<MouseEvent> {
 	public boolean isPrimaryClicked() {
 		return isPrimaryClicked;
 	}
-	public Point2D[] getPrimaryClickInfo() { // clickInfo reset themself! it can only be retrieved once
+	public Point2D[] retrievePrimaryClickInfo() { // clickInfo reset themself! it can only be retrieved once
 		if (isPrimaryClicked = false) return null;
 		Point2D[] clickInfo = {pressPosition, releasePosition};
 		isPrimaryClicked = false;
 		return clickInfo;
 	}
 	
-	public boolean getSecondaryClickInfo() {
+	public boolean retrieveSecondaryClickInfo() {
 		boolean temp = isSecondaryClicked;
 		isSecondaryClicked = false;
 		return temp;

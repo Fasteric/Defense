@@ -28,14 +28,18 @@ public class ArtilleryTower extends Tower {
 	private static double radiusX = 100;
 	private static double radiusY = 70;
 	
-	
-	/*** Constructor ***/
 
 	public ArtilleryTower(Field field, Point2D position, int direction) {
 		super(field, position, direction, prefiringDelay, postfiringDelay, radiusX, radiusY);
 	}
 
-
+	
+	@Override
+	protected void fire() {
+		PrimedTnt primedTnt = new PrimedTnt(field, position, projectileDestination);
+		field.addProjectile(primedTnt);
+	}
+	
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
 		
@@ -55,26 +59,32 @@ public class ArtilleryTower extends Tower {
 
 
 	@Override
-	protected void fire() {
-		
-	}
-
-
-	@Override
 	public boolean hover(Point2D hoverPosition) {
+		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 	@Override
 	public boolean click(Point2D pressPosition, Point2D releasePosition) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unclick() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
-	public boolean unclick() {
-		return false;
+	public double getRenderPriority() {
+		return position.getY();
+	}
+
+	@Override
+	public int compareTo(Renderable other) {
+		return Double.compare(getRenderPriority(), other.getRenderPriority());
 	}
 
 }

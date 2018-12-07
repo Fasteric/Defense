@@ -19,16 +19,28 @@ public class PrimedTnt extends Projectile {
 	public PrimedTnt(Field field, Point2D position, Point2D destination) {
 		super(field, position, destination, 100, 45);
 	}
+	
 
+	@Override
+	protected void hit() {
+		field.pushDamage(new Damage(Damage.EXPLOSION, field, position));
+	}
+	
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
 		if (lifeTime / 10 % 2 == 0) gc.drawImage(unlit, position.getX(), position.getY());
 		else gc.drawImage(lit, position.getX(), position.getY());
 	}
 
+	
 	@Override
-	protected void hit() {
-		field.pushDamage(new Damage(Damage.EXPLOSION, field, position));
+	public double getRenderPriority() {
+		return position.getY();
+	}
+
+	@Override
+	public int compareTo(Renderable other) {
+		return Double.compare(getRenderPriority(), other.getRenderPriority());
 	}
 
 }
