@@ -17,7 +17,18 @@ public class PrimedTnt extends Projectile {
 	private static double height;
 	
 	public PrimedTnt(Field field, Point2D position, Point2D destination) {
-		super()
+		super(field, position, destination, 100, 45);
+	}
+
+	@Override
+	protected void graphicUpdate(GraphicsContext gc) {
+		if (lifeTime / 10 % 2 == 0) gc.drawImage(unlit, position.getX(), position.getY());
+		else gc.drawImage(lit, position.getX(), position.getY());
+	}
+
+	@Override
+	protected void hit() {
+		field.pushDamage(new Damage(Damage.EXPLOSION, field, position));
 	}
 
 }
