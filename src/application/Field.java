@@ -13,14 +13,23 @@ import javafx.scene.image.Image;
 public class Field {
 	
 	private static Image fieldImage;
-	private static Image waveCallEnable;
-	private static Image waveCallDisable;
+	
+	private static Image waveCallButtonEnable;
+	private static Image waveCallButtonDisable;
+	private static Image waveCallButtonHover;
+	
+	private static Image lightningButtonEnable;
+	private static Image lightningButtonDisable;
+	private static Image lightningButtonHover
+	;
+	private static Image[] lightningCursorAnimation;
+	private static int lightningCursorAnimationLength;
 	
 	static {
 		//fieldImage = new Image("");
 	}
 	
-	private ArrayList<Zombie> enemiesOnField;
+	private ArrayList<Enemy> enemiesOnField;
 	private ArrayList<Tower> towersOnField;
 	private ArrayList<PrimedTnt> projectilesOnField;
 	
@@ -29,8 +38,14 @@ public class Field {
 	
 	private int currentWave = 0;
 	private boolean isNextWaveAvailable = true;
-	private boolean isLightningAvailable;
-	private boolean isLightningActive;
+	private Point2D waveCallButtonPosition = new Point2D(1180, 620);
+	
+	private int maxLightningCooldown = 3600;
+	private int lightningCooldown;
+	private boolean isLightningAvailable = true;
+	private boolean isLightningActive = false;
+	private Point2D lightningButtonPosition = new Point2D(980, 620);
+	
 	private boolean isCleared = false;
 	
 	public int money = 500;
@@ -96,24 +111,24 @@ public class Field {
 	
 	private void setupStoredWaves(String line) throws EndOfLineException {
 		LineProcesser lp = new LineProcesser(line, 1);
-		ArrayList<Zombie> enemies = new ArrayList<>();
+		ArrayList<Enemy> enemies = new ArrayList<>();
 		lp.skipUntilNumber();
 		while (!lp.isEnd()) {
 			int spawnTime = lp.readNextInt();
 			String type = lp.readNextWord();
 			int pathIndex = lp.readNextInt();
 			int pathShift = lp.readNextInt();
-			Zombie enemy = createEnemy(type, storedPaths.get(pathIndex), pathShift, spawnTime);
+			Enemy enemy = createEnemy(type, storedPaths.get(pathIndex), pathShift, spawnTime);
 			enemies.add(enemy);
 		}
 		storedWaves.add(new Wave(enemies));
 	}
 	
-	private Zombie createEnemy(String enemyType, Path path, int pathShift, int spawnTime) {
-		if (enemyType == "Zombie") {
+	private Enemy createEnemy(String enemyType, Path path, int pathShift, int spawnTime) {
+		if (enemyType == "Enemy") {
 			
 		}
-		return new Zombie(this, path, pathShift, spawnTime);
+		return null; // TODO
 	}
 	
 	
@@ -121,30 +136,46 @@ public class Field {
 	
 	public void tick(long now, GraphicsContext gc, MouseListener mouse) {
 		
-		// field
+		if (isCleared) return; // failsafe
+		
+		// logic
 		
 		gc.drawImage(fieldImage, 0, 0);
 		
-		if (storedWaves.get(currentWave).isCompleted(now)) {
+		if (storedWaves.get(currentWave).isCompleted(now) && !isLastWave()) {
 			isNextWaveAvailable = true;
 		}
 		
-		if (isNextWaveAvailable) gc.drawImage(waveCallEnable, 1180, 620);
-		else gc.drawImage(waveCallDisable, 1180, 620);
+		if (isNextWaveAvailable) gc.drawImage(waveCallButtonEnable, 1180, 620);
+		else gc.drawImage(waveCallButtonDisable, 1180, 620);
+		
+		
+		if (lightningCooldown > 0) {
+			lightningCooldown--;
+			if (lightningCooldown == 0) {
+				isLightningAvailable = true;
+			}
+		}
+		if (isLightningAvailable) gc.drawImage(lightningButtonEnable, 980, 620);
+		else gc.drawImage(lightningButtonDisable, 980, 620);
 		
 		// mouse
 		
 		Point2D hoverPosition = mouse.getHoverPosition();
-		interpretHover(hoverPosition);
+		interpretHover(gc, hoverPosition);
 		
-		if (mouse.isClicked()) {
-			Point2D[] clickInfo = mouse.getClickInfo();
+		if (mouse.getSecondaryClickInfo()) {
+			isLightningActive = false;
+		}
+		
+		if (mouse.isPrimaryClicked()) {
+			Point2D[] clickInfo = mouse.getPrimaryClickInfo();
 			interpretClick(clickInfo[0], clickInfo[1]);
 		}
 		
 		// update
 		
-		for (Zombie enemy : enemiesOnField) {
+		for (Enemy enemy : enemiesOnField) {
 			enemy.tick(now, gc);
 		}
 		
@@ -156,24 +187,86 @@ public class Field {
 			projectile.tick(now, gc);
 		}
 		
-	}
-	
-	public void interpretHover(Point2D hoverPosition) {
+		if (enemiesOnField.size() == 0 && isLastWave() && !isCleared) {
+			// commenceClear
+			isCleared = true;
+		}
 		
 	}
 	
-	private void interpretClick(Point2D pressPosition, Point2D releasePosition) {
+	public void interpretHover(GraphicsContext gc, Point2D hoverPosition) {
+		
+		if (isNextWaveAvailable) {
+			Point2D waveCallDifferent = PointOperations.different(hoverPosition, waveCallButtonPosition);
+			if (PointOperations.getSize(waveCallDifferent) < 50) {
+				gc.drawImage(waveCallButtonHover, 1180, 620);
+				return;
+			}
+		}
+		
+		if (isLightningAvailable) {
+			Point2D lightningDifferent = PointOperations.different(hoverPosition, lightningButtonPosition);
+			if (PointOperations.getSize(lightningDifferent) < 50) {
+				gc.drawImage(lightningButtonHover, 980, 620);
+				return;
+			}
+		}
+		
+		for (Tower tower : towersOnField) {
+			if (tower.hover(hoverPosition)) return;
+		}
+		
+		for (Enemy enemy : enemiesOnField) {
+			if (enemy.hover(hoverPosition)) return;
+		}
+		
+	}
+	
+	private void interpretClick(long now, GraphicsContext gc, Point2D pressPosition, Point2D releasePosition) {
+		
+		if (isLightningActive) {
+			commenceLightning(releasePosition);
+			isLightningActive = false;
+			return;
+		}
+		
+		if (isNextWaveAvailable) {
+			Point2D waveCallPress = PointOperations.different(pressPosition, waveCallButtonPosition);
+			Point2D waveCallRelease = PointOperations.different(releasePosition, waveCallButtonPosition);
+			if (PointOperations.getSize(waveCallPress) < 50 && PointOperations.getSize(waveCallRelease) < 50) {
+				callNextWave(now);
+				return;
+			}
+		}
+		
+		if (isLightningAvailable) {
+			Point2D lightningPress = PointOperations.different(pressPosition, lightningButtonPosition);
+			Point2D lightningRelease = PointOperations.different(releasePosition, lightningButtonPosition);
+			if (PointOperations.getSize(lightningPress) < 50 && PointOperations.getSize(lightningRelease) < 50) {
+				isLightningActive = true;
+				return;
+			}
+		}
+		
+		for (Tower tower : towersOnField) {
+			if (tower.click(pressPosition, releasePosition)) return;
+		}
+		
+		for (Enemy enemy : enemiesOnField) {
+			// TODO INCOMPLETE T_T
+			if (true) return;
+		}
 		
 	}
 	
 	
-	public ArrayList<Zombie> getEnemiesOnField() {
+	public ArrayList<Enemy> getEnemiesOnField() {
 		return enemiesOnField;
 	}
-	public void addEnemy(Zombie enemy) {
+	public void addEnemy(Enemy enemy) {
 		enemiesOnField.add(enemy);
 	}
-	public void removeEnemy(Zombie enemy) {
+	public void removeEnemy(Enemy enemy) {
 		enemiesOnField.remove(enemy);
 	}
 	
@@ -191,19 +284,29 @@ public class Field {
 		projectilesOnField.remove(projectile);
 	}
 	
-	public void invaded(Zombie enemy) {
+	public void invaded(Enemy enemy) {
 		health--;
 	}
 	
-	
+
+	private boolean isLastWave() {
+		return currentWave + 1 >= storedWaves.size();
+	}
 	private void callNextWave(long now) {
 		if (isLastWave()) return; // failsafe
 		currentWave++;
 		storedWaves.get(currentWave).call(now);
 		isNextWaveAvailable = false;
 	}
-	private boolean isLastWave() {
-		return currentWave + 1 >= storedWaves.size();
+	
+	private void commenceLightning(Point2D position) {
+		// TODO T_T
+		lightningCooldown = maxLightningCooldown;
+		isLightningAvailable = false;
+	}
+	
+	private void commenceClear() {
+		
 	}
 	
 }

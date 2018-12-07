@@ -17,7 +17,10 @@ public class MouseListener implements EventHandler<MouseEvent> {
 	private Point2D pressPosition;
 	private Point2D releasePosition;
 	private boolean isPrimaryPressed = false;
-	private boolean isClicked = false;
+	private boolean isPrimaryClicked = false;
+	
+	private boolean isSecondaryPressed = false;
+	private boolean isSecondaryClicked = false;
 
 	@Override
 	public void handle(MouseEvent event) {
@@ -29,13 +32,19 @@ public class MouseListener implements EventHandler<MouseEvent> {
 				tempPressPosition = hoverPosition;
 				isPrimaryPressed = true;
 			}
+			if (event.isSecondaryButtonDown()) {
+				isSecondaryPressed = true;
+			}
 		}
 		else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
 			if (!event.isPrimaryButtonDown() && isPrimaryPressed) {
 				pressPosition = tempPressPosition;
 				releasePosition = hoverPosition;
 				isPrimaryPressed = false;
-				isClicked = true;
+				isPrimaryClicked = true;
+			}
+			if (event.isSecondaryButtonDown() && isSecondaryPressed) {
+				isSecondaryClicked = true;
 			}
 		}
 		
@@ -45,14 +54,20 @@ public class MouseListener implements EventHandler<MouseEvent> {
 		return hoverPosition;
 	}
 	
-	public boolean isClicked() {
-		return isClicked;
+	public boolean isPrimaryClicked() {
+		return isPrimaryClicked;
 	}
-	public Point2D[] getClickInfo() { // clickInfo reset themself! it can only be retrieved once
-		if (isClicked = false) return null;
+	public Point2D[] getPrimaryClickInfo() { // clickInfo reset themself! it can only be retrieved once
+		if (isPrimaryClicked = false) return null;
 		Point2D[] clickInfo = {pressPosition, releasePosition};
-		isClicked = false;
+		isPrimaryClicked = false;
 		return clickInfo;
+	}
+	
+	public boolean getSecondaryClickInfo() {
+		boolean temp = isSecondaryClicked;
+		isSecondaryClicked = false;
+		return temp;
 	}
 
 }

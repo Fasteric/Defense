@@ -31,12 +31,12 @@ public class NullTower extends Tower {
 		gc.drawImage(idle[direction], drawX, drawY);
 	}
 	
-	public void hover() {
-		
+	public boolean hover(Point2D hoverPosition) {
+		return true;
 	}
 	
-	public void click() {
-		
+	public boolean click(Point2D pressPosition, Point2D releasePosition) {
+		return true;
 	}
 
 }

@@ -9,16 +9,57 @@ public abstract class Tower {
 	protected Point2D position;
 	protected int direction;
 	
-	public Tower(Field field, Point2D position, int direction) {
+	protected int lifeCycle;
+	protected int prefiringDuration;
+	protected int postfiringDuration;
+	
+	protected boolean isSearching = false;
+	protected boolean isPrefiring = false;
+	protected boolean isPostfiring = true;
+	
+	
+	/*** Constructor ***/
+	
+	public Tower(Field field, Point2D position, int direction,
+			int prefiringDuration, int postfiringDuration) {
 		this.field = field;
 		this.position = position;
 		this.direction = direction;
+		this.prefiringDuration = prefiringDuration;
+		this.postfiringDuration = postfiringDuration;
+		
+		lifeCycle = 1;
 	}
 	
-	public abstract void tick(long now, GraphicsContext gc);
+	public void tick(long now, GraphicsContext gc) {
+		logicUpdate(now);
+		graphicUpdate(gc);
+	}
 	
-	public abstract void hover();
+	protected void logicUpdate(long now) {
+		
+		if (isSearching) {
+			search();
+			return;
+		}
+		
+		lifeCycle++;
+		
+	}
 	
-	public abstract void click();
+	protected void search() {
+		//if (found) isSearching = false;
+	}
+	
+	protected abstract void graphicUpdate(GraphicsContext gc);
+	
+	protected abstract void fire();
+	
+	
+	/*** ***/
+	
+	public abstract boolean hover(Point2D hoverPosition);
+	
+	public abstract boolean click(Point2D pressPosition, Point2D releasePosition);
 
 }
