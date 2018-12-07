@@ -13,6 +13,7 @@ public abstract class Enemy implements Comparable<Enemy> {
 	protected double maxHealth;
 	protected double health;
 	protected double speed;
+	protected int reward;
 	protected long spawnTime;
 	protected long callingTime;
 	
@@ -30,13 +31,14 @@ public abstract class Enemy implements Comparable<Enemy> {
 	/*** Constructor ***/
 	
 	public Enemy(Field field, Path path, double pathShift, 
-			double maxHealth, double speed, long spawnTime) {
+			double maxHealth, double speed, int reward, long spawnTime) {
 		this.field = field;
 		this.path = path;
 		this.pathShift = pathShift;
 		this.maxHealth = maxHealth;
 		this.health = maxHealth;
 		this.speed = speed;
+		this.reward = reward;
 		this.spawnTime = spawnTime;
 		
 		position = path.getCoordinate(0, pathShift);
@@ -129,7 +131,7 @@ public abstract class Enemy implements Comparable<Enemy> {
 		despawn();
 	}
 	protected void dying() {
-		// spawn smoke
+		field.addMoney(reward);
 		despawn();
 	}
 	protected void despawn() {
@@ -139,9 +141,13 @@ public abstract class Enemy implements Comparable<Enemy> {
 	
 	/*** Utility ***/
 	
+	public abstract void damage(Damage damage, double amount);
+	
 	public abstract boolean hover(Point2D hoverPosition);
 	
 	public abstract boolean click(Point2D pressPosition, Point2D releasePosition);
+	
+	public abstract boolean unclick();
 	
 	public void call(long callingTime) {
 		this.callingTime = callingTime;
@@ -149,6 +155,10 @@ public abstract class Enemy implements Comparable<Enemy> {
 	
 	public int compareTo(Enemy another) {
 		return Long.compare(spawnTime, another.spawnTime);
+	}
+	
+	public long getSpawnTime() {
+		return spawnTime;
 	}
 
 }

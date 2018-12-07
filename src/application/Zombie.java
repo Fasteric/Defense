@@ -6,15 +6,19 @@ import javafx.scene.image.Image;
 
 public class Zombie extends Enemy {
 	
-	private double width;
-	private double height;
+	private static double width;
+	private static double height;
 	
-	private Image[][] walkingAnimation;
-	private int walkingAnimationLength;
-	private int walkingHoldFrame;
+	private static Image[][] walkingAnimation;
+	private static int walkingAnimationLength;
+	private static int walkingHoldFrame;
+	
+	private static int maxHealth = 20;
+	private static double speed = 10;
+	private static int reward = 20;
 
-	public Zombie(Field field, Path path, double pathShift, double maxHealth, double speed, long spawnTime) {
-		super(field, path, pathShift, maxHealth, speed, spawnTime);
+	public Zombie(Field field, Path path, double pathShift, long spawnTime) {
+		super(field, path, pathShift, maxHealth, speed, reward, spawnTime);
 		
 		walkingAnimationLength = 16;
 		walkingAnimation = new Image[8][walkingAnimationLength];
@@ -36,6 +40,12 @@ public class Zombie extends Enemy {
 		gc.drawImage(walkingAnimation[direction][walkFrameIndex], drawX, drawY);
 	
 	}
+	
+	
+	@Override
+	public void damage(Damage damage, double amount) {
+		
+	}
 
 	@Override
 	public boolean hover(Point2D hoverPosition) {
@@ -47,6 +57,9 @@ public class Zombie extends Enemy {
 		return false;
 	}
 	
-	
+	@Override
+	public boolean unclick() {
+		return false;
+	}
 	
 }

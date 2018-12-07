@@ -7,163 +7,74 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class ArtilleryTower {
+public class ArtilleryTower extends Tower {
 	
-	private static Image[] artilleryTower;
+	private static Image[] idle;
+	private static Image[] hover;
 	
 	private static Image[][] firingAnimation;
-	private static int firingAnimationLength = 10;
-	
-	private static Random random;
+	private static int firingAnimationLength = 18;
 	
 	static {
 		// load image
-		
-		random = new Random(3);
 	}
 	
 	private static double width;
 	private static double height;
 	
-	private Field field;
+	private static int prefiringDelay = 60;
+	private static int postfiringDelay = 120;
 	
-	private Point2D position;
-	private int direction;
-	
-	private double radiusX;
-	private double radiusY;
-	
-	//private boolean isConstructed;
-	
-	private int maxFiringFrameHold = 5;
-	private int firingFrameHold;
-	private int firingFrameIndex;
-	private boolean isFiring;
-	
-	private int triggeringFrame = 3;
-	
-	private int maxFiringCooldown = 180;
-	private int firingCooldown;
-	
-	private Point2D primedTntDestination;
+	private static double radiusX = 100;
+	private static double radiusY = 70;
 	
 	
-	public ArtilleryTower(Field field, Point2D position, int direction) {
-		this.field = field;
-		
-		this.position = position;
-		this.direction = direction;
-		
-		//this.isConstructed = false;
-		
-		this.firingCooldown = maxFiringCooldown;
-		this.isFiring = false;
-	}
-	
-	
-	public void tick(long now, GraphicsContext gc) {
-		/*
-		if (!isConstructed) {
-			construct(gc);
-		}
-		*/
-		if (firingCooldown > 0) {
-			firingCooldown--;
-		}
-		else {
-			commenceFiringSequence();
-		}
-		
-		draw(gc);
-		
-	}
-	/*
-	public void construct(GraphicsContext gc) {
-		gc.drawImage(artilleryTower[direction], position.getX() - width / 2, position.getY() - height);
-		isConstructed = true;
-	}
-	*/
-	private void commenceFiringSequence() {
-		
-		if (firingCooldown > 0) {
-			return; // should not be called
-		}
-		
-		if (!isFiring) {
-			Zombie enemy = pickEnemyInRange(field.getEnemiesOnField());
-			if (enemy != null) {
-				locatePrimedTntDestination(enemy);
-				firingFrameIndex = 0;
-				firingFrameHold = maxFiringFrameHold;
-				isFiring = true;
-			}
-		}
-		
-		if (firingFrameHold > 0) {
-			firingFrameHold--;
-			return;
-		}
-		
-		firingFrameIndex++;
-		firingFrameHold = maxFiringFrameHold;
-		
-		if (firingFrameIndex == triggeringFrame) {
-			fire(field);
-		}
+	/*** Constructor ***/
 
-		if (firingFrameIndex >= firingAnimationLength) {
-			firingCooldown = maxFiringCooldown;
-			isFiring = false;
-		}
+	public ArtilleryTower(Field field, Point2D position, int direction) {
+		super(field, position, direction, prefiringDelay, postfiringDelay, radiusX, radiusY);
+	}
+
+
+	@Override
+	protected void graphicUpdate(GraphicsContext gc) {
 		
-	}
-	
-	private void locatePrimedTntDestination(Zombie selectedEnemy) {
-		Point2D enemyPosition = selectedEnemy.getPosition();
-		Point2D enemyMomentum = selectedEnemy.getMomentum();
-		enemyMomentum = PointOperations.scale(enemyMomentum, 100);
-		primedTntDestination = PointOperations.add(enemyPosition, enemyMomentum);
-		firingFrameIndex = 0;
-		firingFrameHold = maxFiringFrameHold;
-	}
-	
-	private void fire(Field field) {
-		PrimedTnt primedTnt = new PrimedTnt(field, position, primedTntDestination);
-		field.addProjectile(primedTnt);
-	}
-	
-	
-	private void draw(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
 		
-		if (isFiring) {
-			gc.drawImage(firingAnimation[direction][firingFrameIndex], drawX, drawY);
+		if (isSearching) {
+			gc.drawImage(idle[direction], drawX, drawY);
 		}
-		else {
-			gc.drawImage(artilleryTower[direction], drawX, drawY);
+		
+		if (isPrefiring || isPostfiring) {
+			int frame = (lifeCycle + prefiringDelay) / 10;
+			gc.drawImage(firingAnimation[direction][frame], drawX, drawY);
 		}
+		
 	}
-	
-	
-	/*** Utilities ***/
-	
-	private Zombie pickEnemyInRange(ArrayList<Zombie> enemiesOnField) {
-		ArrayList<Zombie> enemiesInRange = new ArrayList<>();
-		for (Zombie e : enemiesOnField) {
-			if (isEnemyInRange(e)) {
-				enemiesInRange.add(e);
-			}
-		}
-		if (enemiesInRange.size() == 0) return null;
-		int enemyIndex = random.nextInt(enemiesInRange.size());
-		return enemiesInRange.get(enemyIndex);
+
+
+	@Override
+	protected void fire() {
+		
 	}
-	
-	private boolean isEnemyInRange(Zombie enemy) {
-		double dx = enemy.getPosition().getX() - position.getX() - width / 2;
-		double dy = enemy.getPosition().getY() - position.getY() - height / 2;
-		return (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1;
+
+
+	@Override
+	public boolean hover(Point2D hoverPosition) {
+		return false;
+	}
+
+
+	@Override
+	public boolean click(Point2D pressPosition, Point2D releasePosition) {
+		return false;
+	}
+
+
+	@Override
+	public boolean unclick() {
+		return false;
 	}
 
 }

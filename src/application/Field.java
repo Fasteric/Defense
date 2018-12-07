@@ -170,7 +170,7 @@ public class Field {
 		
 		if (mouse.isPrimaryClicked()) {
 			Point2D[] clickInfo = mouse.getPrimaryClickInfo();
-			interpretClick(clickInfo[0], clickInfo[1]);
+			interpretClick(now, gc, clickInfo[0], clickInfo[1]);
 		}
 		
 		// update
@@ -284,6 +284,9 @@ public class Field {
 		projectilesOnField.remove(projectile);
 	}
 	
+	public void addMoney(int reward) {
+		money += reward;
+	}
 	public void invaded(Enemy enemy) {
 		health--;
 	}
@@ -306,7 +309,7 @@ public class Field {
 	}
 	
 	private void commenceClear() {
-		
+		// TODO
 	}
 	
 }

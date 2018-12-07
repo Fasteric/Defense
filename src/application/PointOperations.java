@@ -24,7 +24,7 @@ public class PointOperations {
 	public static Point2D normalize(Point2D p) {
 		double x = p.getX();
 		double y = p.getY();
-		double size = Math.sqrt(x * x + y * y);
+		double size = Math.hypot(x, y);
 		return new Point2D(x / size, y / size);
 	}
 	
@@ -43,10 +43,14 @@ public class PointOperations {
 		return new Point2D(rotatedX, rotatedY);
 	}
 	
-	public static double getSize(Point2D p) {
+	public static double getSquaredSize(Point2D p) {
 		double x = p.getX();
 		double y = p.getY();
-		return Math.sqrt(x * x + y * y);
+		return x * x + y * y;
+	}
+	
+	public static double getSize(Point2D p) {
+		return Math.hypot(p.getX(), p.getY());
 	}
 	
 	public static double getAngle(Point2D p) {

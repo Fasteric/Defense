@@ -10,7 +10,7 @@ public class Wave {
 	private ArrayList<Enemy> enemies;
 	
 	private long callTime;
-	private int maxSpawnTime;
+	private long maxSpawnTime;
 	
 	
 	public Wave(ArrayList<Enemy> enemies) {
