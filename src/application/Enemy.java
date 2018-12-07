@@ -14,24 +14,19 @@ public abstract class Enemy implements Comparable<Enemy> {
 	protected double health;
 	protected double speed;
 	protected int reward;
-	protected long spawnTime;
-	protected long callingTime;
+	protected int spawnTime;
 	
 	protected int pathIndex = 0; // will be changed to 1 at 'updateDestination'
 	protected Point2D momentum;
 	protected int subpathTickRemaining = 0;
 	
-	protected boolean isCalled = false;
-	protected boolean isSpawned = false;
-	protected boolean isInvaded = false;
-	
-	protected long lifeTime = 0;
+	protected int lifeTime = 0;
 	
 	
 	/*** Constructor ***/
 	
 	public Enemy(Field field, Path path, double pathShift, 
-			double maxHealth, double speed, int reward, long spawnTime) {
+			double maxHealth, double speed, int reward, int spawnTime) {
 		this.field = field;
 		this.path = path;
 		this.pathShift = pathShift;
@@ -58,14 +53,13 @@ public abstract class Enemy implements Comparable<Enemy> {
 	public void tick(long now, GraphicsContext gc) {
 		logicUpdate(now);
 		graphicUpdate(gc);
+		lifeTime++;
 	}
-	
-	protected abstract void graphicUpdate(GraphicsContext gc);
 	
 	protected void logicUpdate(long now) {
 		
-		if (!isSpawned) {
-			spawn(now);
+		if (spawnTime > 0) {
+			spawnTime--;
 			return;
 		}
 		
@@ -88,16 +82,9 @@ public abstract class Enemy implements Comparable<Enemy> {
 		
 		updatePosition();
 		
-		lifeTime++;
-		
 	}
 	
-	protected void spawn(long now) {
-		if (!isCalled) return;
-		if (callingTime + spawnTime < now) {
-			isSpawned = true;
-		}
-	}
+	protected abstract void graphicUpdate(GraphicsContext gc);
 	
 	protected void updateDestination() {
 		Point2D destination = path.getCoordinate(pathIndex, pathShift);
@@ -132,6 +119,7 @@ public abstract class Enemy implements Comparable<Enemy> {
 	}
 	protected void dying() {
 		field.addMoney(reward);
+		//generate smoke
 		despawn();
 	}
 	protected void despawn() {
@@ -149,15 +137,11 @@ public abstract class Enemy implements Comparable<Enemy> {
 	
 	public abstract boolean unclick();
 	
-	public void call(long callingTime) {
-		this.callingTime = callingTime;
-	}
-	
 	public int compareTo(Enemy another) {
-		return Long.compare(spawnTime, another.spawnTime);
+		return Integer.compare(spawnTime, another.spawnTime);
 	}
 	
-	public long getSpawnTime() {
+	public int getSpawnTime() {
 		return spawnTime;
 	}
 

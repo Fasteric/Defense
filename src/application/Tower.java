@@ -45,6 +45,7 @@ public abstract class Tower {
 	public void tick(long now, GraphicsContext gc) {
 		logicUpdate(now);
 		graphicUpdate(gc);
+		lifeCycle++;
 	}
 	
 	protected void logicUpdate(long now) {
@@ -58,8 +59,6 @@ public abstract class Tower {
 			}
 			return;
 		}
-		
-		lifeCycle++;
 		
 		if (lifeCycle == 0) {
 			fire();

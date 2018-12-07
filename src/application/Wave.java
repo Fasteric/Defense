@@ -9,8 +9,8 @@ public class Wave {
 	
 	private ArrayList<Enemy> enemies;
 	
-	private long callTime;
-	private long maxSpawnTime;
+	private int callTime;
+	private int maxSpawnTime;
 	
 	
 	public Wave(ArrayList<Enemy> enemies) {
@@ -20,14 +20,9 @@ public class Wave {
 	}
 	
 	public void call(long now) {
-		for (Enemy e : enemies) {
-			e.call(now);
-			field.addEnemy(e);
+		for (Enemy enemy : enemies) {
+			field.addEnemy(enemy);
 		}
-	}
-	
-	public boolean isCompleted(long now) {
-		return now > callTime + maxSpawnTime;
 	}
 	
 }

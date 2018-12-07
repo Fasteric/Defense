@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
@@ -31,10 +32,12 @@ public class Field {
 	
 	private ArrayList<Enemy> enemiesOnField;
 	private ArrayList<Tower> towersOnField;
-	private ArrayList<PrimedTnt> projectilesOnField;
+	private ArrayList<Projectile> projectilesOnField;
 	
 	private ArrayList<Path> storedPaths = new ArrayList<Path>();
 	private ArrayList<Wave> storedWaves = new ArrayList<Wave>();
+	
+	private ArrayDeque<Damage> awaitingDamage = new ArrayDeque<>();
 	
 	private int currentWave = 0;
 	private boolean isNextWaveAvailable = true;
@@ -141,11 +144,7 @@ public class Field {
 		// logic
 		
 		gc.drawImage(fieldImage, 0, 0);
-		
-		if (storedWaves.get(currentWave).isCompleted(now) && !isLastWave()) {
-			isNextWaveAvailable = true;
-		}
-		
+		/*
 		if (isNextWaveAvailable) gc.drawImage(waveCallButtonEnable, 1180, 620);
 		else gc.drawImage(waveCallButtonDisable, 1180, 620);
 		
@@ -158,13 +157,13 @@ public class Field {
 		}
 		if (isLightningAvailable) gc.drawImage(lightningButtonEnable, 980, 620);
 		else gc.drawImage(lightningButtonDisable, 980, 620);
-		
+		*/
 		// mouse
 		
 		Point2D hoverPosition = mouse.getHoverPosition();
 		interpretHover(gc, hoverPosition);
 		
-		if (mouse.getSecondaryClickInfo()) {
+		if (mouse.getSecondaryClickInfo() && isLightningActive) {
 			isLightningActive = false;
 		}
 		
@@ -175,20 +174,25 @@ public class Field {
 		
 		// update
 		
-		for (Enemy enemy : enemiesOnField) {
-			enemy.tick(now, gc);
+		for (Projectile projectile : projectilesOnField) {
+			projectile.tick(now, gc);
+		}
+		
+		while (!awaitingDamage.isEmpty()) {
+			Damage damage = awaitingDamage.pop();
+			damage.process();
 		}
 		
 		for (Tower tower : towersOnField) {
 			tower.tick(now, gc);
 		}
 		
-		for (PrimedTnt projectile : projectilesOnField) {
-			projectile.tick(now, gc);
+		for (Enemy enemy : enemiesOnField) {
+			enemy.tick(now, gc);
 		}
 		
 		if (enemiesOnField.size() == 0 && isLastWave() && !isCleared) {
-			// commenceClear
+			commenceClear();
 			isCleared = true;
 		}
 		
@@ -274,14 +278,18 @@ public class Field {
 		return towersOnField;
 	}
 	
-	public ArrayList<PrimedTnt> getProjectileOnField() {
+	public ArrayList<Projectile> getProjectileOnField() {
 		return projectilesOnField;
 	}
-	public void addProjectile(PrimedTnt projectile) {
+	public void addProjectile(Projectile projectile) {
 		projectilesOnField.add(projectile);
 	}
-	public void removeProjectile(PrimedTnt projectile) {
+	public void removeProjectile(Projectile projectile) {
 		projectilesOnField.remove(projectile);
+	}
+	
+	public void pushDamage(Damage damage) {
+		awaitingDamage.push(damage);
 	}
 	
 	public void addMoney(int reward) {
