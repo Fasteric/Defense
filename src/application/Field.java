@@ -26,6 +26,7 @@ public class Field implements Renderable, MouseInteractable {
 		// load image
 	}
 	
+	
 	private Image fieldImage;
 
 	private ArrayDeque<Wave> storedWave = new ArrayDeque<Wave>();
@@ -41,11 +42,21 @@ public class Field implements Renderable, MouseInteractable {
 	private int life;
 	private int money;
 	
+	private CooldownButton callButton;
+	private CooldownButton lightningButton;
+	
 	
 	/*** Constructor ***/
 	
 	public Field(String filePath) throws Exception {
+		
 		readFile(filePath);
+		
+		callButton = new CooldownButton(this, callDisable, callEnable, callHover,
+				callButtonPosition, 75, 75, 0, true);
+		lightningButton = new CooldownButton(this, lightningDisable, lightningEnable, lightningHover, 
+				lightningButtonPosition, 75, 75, 3600, false);
+		
 	}
 	
 	private void readFile(String filePath) throws Exception {
@@ -73,6 +84,9 @@ public class Field implements Renderable, MouseInteractable {
 					break;
 				}
 				case "wave" : {
+					if (!sc.hasNextInt()) {
+						throw new InvalidStageFormatException("expect int waveDuration");
+					}
 					String waveInfo = "";
 					String line = sc.nextLine();
 					while (line != "endwave") {
@@ -198,7 +212,8 @@ public class Field implements Renderable, MouseInteractable {
 
 	@Override
 	public void tick(long now, GraphicsContext gc) {
-		// TODO Auto-generated method stub
+		
+		
 		
 	}
 	

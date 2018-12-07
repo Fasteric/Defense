@@ -7,7 +7,7 @@ path	x y	x y	x y	x y	x y
 path	x y	x y	x y	x y	x y	x y
 path	x y	x y
 
-wave
+wave	duration
 name pathIndex pathShift spawnTick
 name pathIndex pathShift spawnTick
 name pathIndex pathShift spawnTick

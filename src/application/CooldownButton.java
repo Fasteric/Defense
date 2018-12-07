@@ -20,13 +20,14 @@ public class CooldownButton implements Renderable, MouseInteractable {
 	
 	private int cooldown = 0;
 	
+	private boolean isPause = false;
 	private boolean isEnable;
 	private boolean isHover = false;
 	private boolean isClicked = false;
 	
 	
-	public CooldownButton(Field field, Point2D position, Image disable, Image enable, Image hover, 
-			int maxCooldown, boolean isEnable) {
+	public CooldownButton(Field field, Image disable, Image enable, Image hover, Point2D position, 
+			double width, double height, int maxCooldown, boolean isEnable) {
 		this.field = field;
 		this.position = position;
 		
@@ -56,7 +57,9 @@ public class CooldownButton implements Renderable, MouseInteractable {
 			isEnable = false;
 		}
 		
+		
 		if (!isEnable) {
+			if (isPause) return;
 			gc.drawImage(disable, drawX, drawY);
 			cooldown++;
 			return;
@@ -74,6 +77,16 @@ public class CooldownButton implements Renderable, MouseInteractable {
 			isEnable = true;
 		}
 		
+	}
+	
+	
+	public void setMaxCooldown(int maxCooldown) {
+		this.maxCooldown = maxCooldown;
+		this.cooldown = 0;
+	}
+	
+	public void pause() {
+		isPause = true;
 	}
 	
 	public boolean retrieveClick() {
