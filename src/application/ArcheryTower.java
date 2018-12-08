@@ -6,18 +6,21 @@ import javafx.scene.image.Image;
 
 public class ArcheryTower extends Tower {
 	
-	private static Image[] idle;
-	private static Image[] hover;
+	private static Image[] idle = new Image[4];
+	private static Image[][] firing = new Image[4][3];
 	
-	private static Image[][] firingAnimation;
-	private static int firingAnimationLength = 3;
+	private static double width = 70;
+	private static double height = 90;
 	
 	static {
-		// load image
+		String format = "stray%d%d.png";
+		for (int i = 0; i < 4; i++) {
+			idle[i] = new Image(String.format(format, i, 3), width, height, true, false);
+			for (int j = 0; j < 3; j++) {
+				firing[i][j] = new Image(String.format(format, i, j), width, height, true, false);
+			}
+		}
 	}
-	
-	private static double width;
-	private static double height;
 	
 	private static int prefiringDelay = 15;
 	private static int postfiringDelay = 15;
@@ -44,19 +47,20 @@ public class ArcheryTower extends Tower {
 		
 		if (isSearching) {
 			gc.drawImage(idle[direction], drawX, drawY);
+			return;
 		}
 		
 		if (lifeCycle >= -15 && lifeCycle < -10) {
-			gc.drawImage(firingAnimation[direction][0], drawX, drawY);
+			gc.drawImage(firing[direction][0], drawX, drawY);
 		}
 		if (lifeCycle >= -10 && lifeCycle < -5) {
-			gc.drawImage(firingAnimation[direction][1], drawX, drawY);
+			gc.drawImage(firing[direction][1], drawX, drawY);
 		}
 		if (lifeCycle >= -5 && lifeCycle < 0) {
-			gc.drawImage(firingAnimation[direction][2], drawX, drawY);
+			gc.drawImage(firing[direction][2], drawX, drawY);
 		}
 		if (lifeCycle >= 0 && lifeCycle < 15) {
-			gc.drawImage(firingAnimation[direction][0], drawX, drawY);
+			gc.drawImage(firing[direction][0], drawX, drawY);
 		}
 		
 	}

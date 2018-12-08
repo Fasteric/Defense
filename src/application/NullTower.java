@@ -9,12 +9,13 @@ public class NullTower extends Tower {
 	private static Image idle;
 	private static Image hover;
 	
-	static {
-		// load image;
-	}
+	private static double width = 70;
+	private static double height = 90;
 	
-	private static double width;
-	private static double height;
+	static {
+		idle = new Image("null.png", width, height, true, false);
+		hover = idle;
+	}
 	
 	private static int prefiringDelay = 2147483647;
 	private static int postfiringDelay = 2147483647;
@@ -23,7 +24,6 @@ public class NullTower extends Tower {
 	private static double radiusY = 0;
 	
 	private boolean isHovered;
-	private boolean isClicked;
 	private UpgradeTooltip tooltip;
 	
 	
@@ -58,7 +58,6 @@ public class NullTower extends Tower {
 		if (!isMouseInRange(pressPosition) || !isMouseInRange(releasePosition)) {
 			return false;
 		}
-		isClicked = true;
 		field.addRender(tooltip); // tooltip will remove itself
 		return true;
 	}

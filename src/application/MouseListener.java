@@ -1,9 +1,6 @@
 package application;
 
-import java.util.ArrayDeque;
-
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 
@@ -42,9 +39,12 @@ public class MouseListener implements EventHandler<MouseEvent> {
 				releasePosition = hoverPosition;
 				isPrimaryPressed = false;
 				isPrimaryClicked = true;
+				//System.out.println("DEBUG : primaryClicked");
 			}
-			if (event.isSecondaryButtonDown() && isSecondaryPressed) {
+			if (!event.isSecondaryButtonDown() && isSecondaryPressed) {
+				isSecondaryPressed = false;
 				isSecondaryClicked = true;
+				//System.out.println("DEBUG : secondaryClicked");
 			}
 		}
 		

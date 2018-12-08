@@ -10,7 +10,8 @@ public class Wave {
 	private int waveDuration;
 	
 	
-	public Wave(ArrayList<Enemy> enemies, int waveDuration) {
+	public Wave(Field field, ArrayList<Enemy> enemies, int waveDuration) {
+		this.field = field;
 		this.enemies = enemies;
 		this.waveDuration = waveDuration;
 	}
@@ -20,6 +21,10 @@ public class Wave {
 		for (Enemy enemy : enemies) {
 			field.addEnemy(enemy);
 		}
+		return waveDuration;
+	}
+	
+	public int getWaveDuration() {
 		return waveDuration;
 	}
 	

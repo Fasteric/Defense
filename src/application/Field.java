@@ -35,15 +35,18 @@ public class Field {
 	private ArrayDeque<Damage> damageQueue = new ArrayDeque<>();
 
 	private ArrayList<Renderable> renderableHolder = new ArrayList<>();
-	private ArrayList<Enemy> enemyOnField;
-	private ArrayList<Projectile> projectileOnField;
-	private ArrayList<Tower> towerOnField;
+	private ArrayList<Enemy> enemyOnField = new ArrayList<>();
+	private ArrayList<Projectile> projectileOnField = new ArrayList<>();
+	private ArrayList<Tower> towerOnField = new ArrayList<>();
 
 	private int life;
 	private int money;
 	
 	private CooldownButton callButton;
 	private CooldownButton lightningButton;
+	
+	private int lifeTime = 0;
+	private int nextWaveTime = 300;
 	
 	private Point2D mouseHoverPosition;
 	private Point2D mousePressPosition;
@@ -54,21 +57,25 @@ public class Field {
 	
 	/*** Constructor ***/
 	
-	public Field(String filePath) throws Exception {
+	public Field(String path) throws Exception {
 		
-		readFile(filePath);
+		fieldImage = new Image("stage/stage.png");
 		
+		readFile("bin/stage/stage.txt");
+		/*
 		callButton = new CooldownButton(this, callDisable, callEnable, callHover,
 				callButtonPosition, 75, 75, 0, true);
 		lightningButton = new CooldownButton(this, lightningDisable, lightningEnable, lightningHover, 
 				lightningButtonPosition, 75, 75, 3600, false);
-		
+		*/
 		// Constructor is not complete yet
+		
+		System.out.println("Field Constructed");
 		
 	}
 	
-	private void readFile(String filePath) throws Exception {
-		File file = new File(filePath);
+	private void readFile(String path) throws Exception {
+		File file = new File(path);
 		Scanner sc = new Scanner(file);
 		
 		while (sc.hasNext()) {
@@ -98,7 +105,7 @@ public class Field {
 					int waveDuration = sc.nextInt();
 					String waveInfo = "";
 					String line = sc.nextLine();
-					while (line != "endwave") {
+					while (!line.equals("endwave")) {
 						waveInfo += "\t" + line;
 						line = sc.nextLine();
 					}
@@ -201,7 +208,7 @@ public class Field {
 			
 		}
 		
-		Wave wave = new Wave(enemiesInWave, waveDuration);
+		Wave wave = new Wave(this, enemiesInWave, waveDuration);
 		storedWave.add(wave);
 		
 		sc.close();
@@ -223,7 +230,7 @@ public class Field {
 	/*** Tick ***/
 
 	public void tick(long now, GraphicsContext gc) {
-		
+
 		boolean isClickProcessed = false;
 		for (int i = renderableHolder.size() - 1; i >= 0; i--) {
 			Renderable render = renderableHolder.get(i);
@@ -233,7 +240,7 @@ public class Field {
 				if (!isClickProcessed && isPrimaryClicked) {
 					boolean isProcessable = mr.click(mousePressPosition, mouseReleasePosition);
 					if (!isProcessable) mr.unclick();
-					else isClickProcessed = true;
+					else isClickProcessed = true; // allow only one object to process click
 				}
 				else if (isClickProcessed && isPrimaryClicked) {
 					mr.unclick();
@@ -241,11 +248,31 @@ public class Field {
 			}
 		}
 		
+		
+		if (lifeTime >= nextWaveTime && !storedWave.isEmpty()) {
+			System.out.println("DEBUG : Wave Call");
+			nextWaveTime = lifeTime + storedWave.peek().getWaveDuration();
+			storedWave.peek().call(now);
+			storedWave.pop();
+		}
+		
+		
 		gc.drawImage(fieldImage, 0, 0);
+		
 		
 		for (int i = 0; i < renderableHolder.size(); i++) {
 			renderableHolder.get(i).tick(now, gc);
 		}
+		
+		
+		// DEBUG
+		if (isPrimaryClicked) {
+			System.out.println("DEBUG : renderableHolder size : " + renderableHolder.size());
+		}
+		
+		lifeTime++;
+		isPrimaryClicked = false; // reset
+		isSecondaryClicked = false;
 		
 	}
 	
@@ -298,7 +325,7 @@ public class Field {
 	public void invade(Enemy invader) {
 		life--;
 		if (life <= 0) {
-			// game over
+			// trigger game over
 		}
 	}
 	

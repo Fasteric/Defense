@@ -6,30 +6,43 @@ import javafx.scene.image.Image;
 
 public class Zombie extends Enemy {
 	
-	private static double width;
-	private static double height;
+	private static Image[][] walking = new Image[8][21];
+	private static int walkingLength = 21;
+	private static int walkingHold = 3;
 	
-	private static Image[][] walkingAnimation;
-	private static int walkingAnimationLength = 21;
-	private static int walkingHoldFrame = 3;
+	private static double width = 30;
+	private static double height = 50;
 	
-	static {
-		// load image
+	private static String interpretDirection(int direction) {
+		if (direction == 0 || direction == 4) return "side";
+		if (direction == 1 || direction == 3) return "left";
+		if (direction == 2) return "front";
+		if (direction == 5 || direction == 7) return "right";
+		if (direction == 6) return "back";
+		return "WHAT THE FUCK";
 	}
 	
-	private static int maxHealth = 20;
+	private static boolean needFlip(int direction) {
+		if (direction == 0 || direction == 3 || direction == 5) return true;
+		return false;
+	}
+	
+	static {
+		String format = "/zombie/%s (%d).png";
+		for (int i = 0; i < 8; i++) {
+			String d = interpretDirection(i);
+			for (int j = 0; j < 21; j++) {
+				walking[i][j] = new Image(String.format(format, d, j + 1), width, height, true, false);
+			}
+		}
+	}
+	
+	private static int maxHealth = 50;
 	private static double speed = 10;
 	private static int reward = 20;
 
 	public Zombie(Field field, Path path, double pathShift, int spawnTime) {
 		super(field, path, pathShift, maxHealth, speed, reward, spawnTime);
-		
-		walkingAnimationLength = 16;
-		walkingAnimation = new Image[8][walkingAnimationLength];
-		walkingHoldFrame = 10;
-		
-		width = 100;
-		height = 100;
 	}
 
 	@Override
@@ -37,11 +50,19 @@ public class Zombie extends Enemy {
 		
 		if (spawnTime > 0) return;
 		
-		double drawX = position.getX() - width / 2;
+		double drawX = position.getX();
 		double drawY = position.getY() - height;
 		
-		int walkFrameIndex = (int) lifeTime % walkingHoldFrame;
-		gc.drawImage(walkingAnimation[direction][walkFrameIndex], drawX, drawY);
+		int walkFrameIndex = (int) lifeTime % walkingHold;
+		
+		if (needFlip(direction)) {
+			drawX += width / 2;
+			gc.drawImage(walking[direction][walkFrameIndex], 0, 0, width, height, drawX, drawY, -width, height);
+		}
+		else {
+			drawX -= width / 2;
+			gc.drawImage(walking[direction][walkFrameIndex], drawX, drawY);
+		}
 	
 	}
 

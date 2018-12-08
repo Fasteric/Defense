@@ -6,3 +6,5 @@ private boolean isMouseInRange(Point2D mousePosition) {
 
 double drawX = position.getX() - width / 2;
 double drawY = position.getY() - height;
+
+new Image(template, width, height, true, false);

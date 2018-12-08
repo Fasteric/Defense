@@ -6,18 +6,17 @@ import javafx.scene.image.Image;
 
 public class WitchTower extends Tower {
 	
-	private static Image[] idle;
-	private static Image[] hover;
+	private static Image[] idle = new Image[4];
 	
-	private static Image[][] firingAnimation;
-	private static int firingAnimationLength = 0;
+	private static double width = 70;
+	private static double height = 90;
 	
 	static {
-		// load image
+		String format = "witch%d.png";
+		for (int i = 0; i < 4; i++) {
+			idle[i] = new Image(String.format(format, i), width, height, true, false);
+		}
 	}
-	
-	private static double width;
-	private static double height;
 	
 	private static int prefiringDelay = 60;
 	private static int postfiringDelay = 60;

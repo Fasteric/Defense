@@ -1,26 +1,24 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class ArtilleryTower extends Tower {
 	
-	private static Image[] idle;
-	private static Image[] hover;
+	private static Image[] idle = new Image[4];
+	private static Image[] firing = new Image[4];
 	
-	private static Image[][] firingAnimation;
-	private static int firingAnimationLength = 2;
+	private static double width = 70;
+	private static double height = 90;
 	
 	static {
-		// load image
+		String format = "tnt%d%d.png";
+		for (int i = 0; i < 4; i++) {
+			idle[i] = new Image(String.format(format, i, 0), width, height, true, false);
+			firing[i] = new Image(String.format(format, i, 1), width, height, true, false);
+		}
 	}
-	
-	private static double width;
-	private static double height;
 	
 	private static int prefiringDelay = 60;
 	private static int postfiringDelay = 120;
@@ -52,10 +50,10 @@ public class ArtilleryTower extends Tower {
 		
 		if (isPrefiring || isPostfiring) {
 			if (lifeCycle >= 0 && lifeCycle < 60) {
-				gc.drawImage(firingAnimation[direction][1], drawX, drawY);
+				gc.drawImage(firing[direction], drawX, drawY);
 			}
 			else {
-				gc.drawImage(firingAnimation[direction][0], drawX, drawY);
+				gc.drawImage(idle[direction], drawX, drawY);
 			}
 		}
 		
