@@ -59,9 +59,9 @@ public class Field {
 	
 	public Field(String path) throws Exception {
 		
-		fieldImage = new Image("stage/stage.png");
+		fieldImage = new Image("res/stage/stage.png");
 		
-		readFile("bin/stage/stage.txt");
+		readFile("bin/res/stage/stage.txt");
 		/*
 		callButton = new CooldownButton(this, callDisable, callEnable, callHover,
 				callButtonPosition, 75, 75, 0, true);
@@ -230,7 +230,8 @@ public class Field {
 	/*** Tick ***/
 
 	public void tick(long now, GraphicsContext gc) {
-
+		
+		// retrieve mouse
 		boolean isClickProcessed = false;
 		for (int i = renderableHolder.size() - 1; i >= 0; i--) {
 			Renderable render = renderableHolder.get(i);
@@ -248,7 +249,7 @@ public class Field {
 			}
 		}
 		
-		
+		// release wave
 		if (lifeTime >= nextWaveTime && !storedWave.isEmpty()) {
 			System.out.println("DEBUG : Wave Call");
 			nextWaveTime = lifeTime + storedWave.peek().getWaveDuration();
@@ -256,7 +257,12 @@ public class Field {
 			storedWave.pop();
 		}
 		
+		// process damage
+		while (!damageQueue.isEmpty()) {
+			damageQueue.pop().dealDamage();
+		}
 		
+		// draw background
 		gc.drawImage(fieldImage, 0, 0);
 		
 		

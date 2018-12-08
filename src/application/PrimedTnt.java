@@ -8,13 +8,14 @@ public class PrimedTnt extends Projectile {
 	
 	private static Image lit;
 	private static Image unlit;
+
+	private static double width = 25;
+	private static double height = 25;
 	
 	static {
-		// load image;
+		lit = new Image("res/projectile/potion.png", width, height, true, false);
+		unlit = lit;
 	}
-	
-	private static double width;
-	private static double height;
 	
 	private static double verticalTrajectory = 125;
 	private static int maxLifeTime = 60;

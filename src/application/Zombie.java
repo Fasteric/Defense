@@ -8,7 +8,7 @@ public class Zombie extends Enemy {
 	
 	private static Image[][] walking = new Image[8][21];
 	private static int walkingLength = 21;
-	private static int walkingHold = 3;
+	private static int walkingHold = 6;
 	
 	private static double width = 30;
 	private static double height = 50;
@@ -28,7 +28,7 @@ public class Zombie extends Enemy {
 	}
 	
 	static {
-		String format = "/zombie/%s (%d).png";
+		String format = "res/zombie/%s (%d).png";
 		for (int i = 0; i < 8; i++) {
 			String d = interpretDirection(i);
 			for (int j = 0; j < 21; j++) {
@@ -38,7 +38,7 @@ public class Zombie extends Enemy {
 	}
 	
 	private static int maxHealth = 50;
-	private static double speed = 10;
+	private static double speed = 30;
 	private static int reward = 20;
 
 	public Zombie(Field field, Path path, double pathShift, int spawnTime) {
@@ -53,7 +53,7 @@ public class Zombie extends Enemy {
 		double drawX = position.getX();
 		double drawY = position.getY() - height;
 		
-		int walkFrameIndex = (int) lifeTime % walkingHold;
+		int walkFrameIndex = (int) lifeTime / walkingHold % walkingLength;
 		
 		if (needFlip(direction)) {
 			drawX += width / 2;
@@ -69,6 +69,7 @@ public class Zombie extends Enemy {
 	@Override
 	public void damage(Damage damage, double amount) {
 		health -= amount;
+		System.out.println("DEBUG : Zombie.damage health : " + health);
 	}
 
 	

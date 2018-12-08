@@ -13,7 +13,7 @@ public class NullTower extends Tower {
 	private static double height = 90;
 	
 	static {
-		idle = new Image("null.png", width, height, true, false);
+		idle = new Image("res/tower/null.png", width, height, true, false);
 		hover = idle;
 	}
 	

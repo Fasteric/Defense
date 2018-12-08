@@ -12,7 +12,7 @@ public class WitchTower extends Tower {
 	private static double height = 90;
 	
 	static {
-		String format = "witch%d.png";
+		String format = "res/tower/witch%d.png";
 		for (int i = 0; i < 4; i++) {
 			idle[i] = new Image(String.format(format, i), width, height, true, false);
 		}
@@ -32,7 +32,8 @@ public class WitchTower extends Tower {
 	
 	@Override
 	protected void fire() {
-		//ThrowPotion throwPotion = new ThrowPotion();
+		ThrowPotion throwPotion = new ThrowPotion(field, position, projectileDestination);
+		field.addProjectile(throwPotion);
 	}
 	
 	@Override

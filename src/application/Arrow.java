@@ -8,11 +8,16 @@ public class Arrow extends Projectile {
 	
 	private static Image arrow;
 
-	private static double width;
-	private static double height;
+	private static double width = 25;
+	private static double height = 25;
+	
+	static {
+		arrow = new Image("res/projectile/potion.png", width, height, true, false);
+	}
 	
 	private static double verticalTrajectory = 75;
 	private static int maxLifeTime = 15;
+	
 	
 	public Arrow(Field field, Point2D position, Point2D destination) {
 		super(field, position, destination, verticalTrajectory, maxLifeTime);

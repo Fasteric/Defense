@@ -82,6 +82,8 @@ public abstract class Enemy implements Renderable {
 		
 		updatePosition();
 		
+		subpathTickRemaining--;
+		
 	}
 	
 	protected void updateDestination() {
@@ -96,7 +98,7 @@ public abstract class Enemy implements Renderable {
 	
 	protected void updateDirection() {
 		double angle = PointOperations.getAngle(momentum);
-		if (angle < 0) angle += 180;
+		angle += 180;
 		if (angle >= 360 - 22.5 || angle < 0 + 22.5) direction = 0;
 		if (angle >= 45 - 22.5 && angle < 45 + 22.5) direction = 1;
 		if (angle >= 90 - 22.5 && angle < 90 + 22.5) direction = 2;
@@ -105,6 +107,7 @@ public abstract class Enemy implements Renderable {
 		if (angle >= 225 - 22.5 && angle < 225 + 22.5) direction = 5;
 		if (angle >= 270 - 22.5 && angle < 270 + 22.5) direction = 6;
 		if (angle >= 315 - 22.5 && angle < 315 + 22.5) direction = 7;
+		direction = (direction + 4) % 8; // workaround
 	}
 	
 	protected void updatePosition() {
@@ -112,6 +115,7 @@ public abstract class Enemy implements Renderable {
 	}
 	
 	protected void invading() {
+		System.out.println("DEBUG : Invading");
 		field.invade(this);
 		despawn();
 	}

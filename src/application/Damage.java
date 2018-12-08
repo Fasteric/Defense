@@ -51,7 +51,7 @@ public class Damage {
 	}
 	
 
-	public void process() {
+	public void dealDamage() {
 		switch (type) {
 			case ARROW : processArrowDamage(); break;
 			case EXPLOSION : processExplosionDamage(); break;

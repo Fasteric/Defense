@@ -8,8 +8,12 @@ public class ThrowPotion extends Projectile {
 	
 	private static Image potion;
 
-	private static double width;
-	private static double height;
+	private static double width = 25;
+	private static double height = 25;
+	
+	static {
+		potion = new Image("res/projectile/potion.png", width, height, true, false);
+	}
 	
 	private static double verticalTrajectory = 20;
 	private static int maxLifeTime = 45;

@@ -27,8 +27,7 @@ public abstract class Projectile implements Renderable {
 		
 		horizontalPosition = position;
 		Point2D different = PointOperations.different(position, destination);
-		double distant = PointOperations.getSize(different);
-		horizontalMomentum = PointOperations.scale(different, distant / maxLifeTime);
+		horizontalMomentum = PointOperations.scale(different, 1d / maxLifeTime);
 	}
 	
 	
@@ -44,14 +43,14 @@ public abstract class Projectile implements Renderable {
 		horizontalPosition = PointOperations.add(horizontalPosition, horizontalMomentum);
 		position = new Point2D(horizontalPosition.getX(), 
 				horizontalPosition.getY() - calculateVerticalTrajectory()); // minus y is actually up
-		if (lifeTime == 0) {
+		if (lifeTime == maxLifeTime) {
 			hit();
 			field.removeProjectile(this);
 		}
 	}
 	
 	protected double calculateVerticalTrajectory() {
-		double t = (2 * lifeTime - maxLifeTime) / maxLifeTime;
+		double t = (2d * lifeTime - maxLifeTime) / maxLifeTime;
 		return verticalTrajectory * (1 - t * t);
 	}
 	

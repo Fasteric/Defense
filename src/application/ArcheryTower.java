@@ -13,7 +13,7 @@ public class ArcheryTower extends Tower {
 	private static double height = 90;
 	
 	static {
-		String format = "stray%d%d.png";
+		String format = "res/tower/stray%d%d.png";
 		for (int i = 0; i < 4; i++) {
 			idle[i] = new Image(String.format(format, i, 3), width, height, true, false);
 			for (int j = 0; j < 3; j++) {
@@ -36,7 +36,8 @@ public class ArcheryTower extends Tower {
 	
 	@Override
 	protected void fire() {
-		//Arrow arrow = new Arrow();
+		Arrow arrow = new Arrow(field, position, projectileDestination);
+		field.addProjectile(arrow);
 	}
 	
 	@Override

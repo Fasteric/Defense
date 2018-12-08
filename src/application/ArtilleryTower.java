@@ -13,7 +13,7 @@ public class ArtilleryTower extends Tower {
 	private static double height = 90;
 	
 	static {
-		String format = "tnt%d%d.png";
+		String format = "res/tower/tnt%d%d.png";
 		for (int i = 0; i < 4; i++) {
 			idle[i] = new Image(String.format(format, i, 0), width, height, true, false);
 			firing[i] = new Image(String.format(format, i, 1), width, height, true, false);
@@ -23,7 +23,7 @@ public class ArtilleryTower extends Tower {
 	private static int prefiringDelay = 60;
 	private static int postfiringDelay = 120;
 
-	private static double radiusY = 70;
+	private static double radiusY = 100;
 	private static double radiusX = 1.732 * radiusY;
 	
 
@@ -34,6 +34,7 @@ public class ArtilleryTower extends Tower {
 	
 	@Override
 	protected void fire() {
+		System.out.println("DEBUG : Artillery.fire from to : " + position + " -> " + projectileDestination);
 		PrimedTnt primedTnt = new PrimedTnt(field, position, projectileDestination);
 		field.addProjectile(primedTnt);
 	}

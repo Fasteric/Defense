@@ -6,20 +6,23 @@ import javafx.scene.image.Image;
 
 public class UpgradeTooltip implements Renderable, MouseInteractable {
 	
-	private static Image[] tooltip;
-	
-	static {
-		// load image
-	}
+	private static Image[] tooltip = new Image[4];
 	
 	private static double width = 150;
 	private static double height = 150;
+	
+	static {
+		String format = "res/tooltip/towerselect%d.png";
+		for (int i = 0; i < 4; i++) {
+			tooltip[i] = new Image(String.format(format, i), width, height, true, false);
+		}
+	}
 	
 	private Field field;
 	private NullTower owner;
 	private Point2D position;
 	
-	private int hoverStatus = 0;
+	private int hoverStatus;
 	
 	
 	public UpgradeTooltip(Field field, NullTower owner, Point2D position) {
@@ -40,7 +43,7 @@ public class UpgradeTooltip implements Renderable, MouseInteractable {
 	@Override
 	public boolean hover(Point2D hoverPosition) {
 		
-		hoverStatus = 0;
+		hoverStatus = 3;
 		
 		double dx = hoverPosition.getX() - position.getX();
 		double dy = hoverPosition.getY() - position.getY();
@@ -83,10 +86,10 @@ public class UpgradeTooltip implements Renderable, MouseInteractable {
 	}
 	
 	private int mouseOn(double dy) {
-		if (dy >= 0 * -height / 3 && dy <= 1 * -height / 3) return 1;
-		if (dy > 1 * -height / 3 && dy <= 2 * -height / 3) return 2;
-		if (dy > 2 * -height / 3 && dy <= 3 * -height / 3) return 3;
-		return 0; // falisafe but not safe; should not happen;
+		if (dy >= 3 * -height / 3 && dy <= 2 * -height / 3) return 0;
+		if (dy > 2 * -height / 3 && dy <= 1 * -height / 3) return 1;
+		if (dy > 1 * -height / 3 && dy <= 0 * -height / 3) return 2;
+		return 3; // falisafe but not safe; should not happen;
 	}
 	
 	private void replaceNullTower(int s) {
@@ -96,17 +99,22 @@ public class UpgradeTooltip implements Renderable, MouseInteractable {
 		Tower replaceTower = null;
 		
 		switch (s) {
-			case 1 : {
+			case 0 : {
 				replaceTower = new ArcheryTower(field, ownerPosition, ownerDirection);
 				break;
 			}
-			case 2 : {
+			case 1 : {
 				replaceTower = new WitchTower(field, ownerPosition, ownerDirection);
 				break;
 			}
-			case 3 : {
+			case 2 : {
 				replaceTower = new ArtilleryTower(field, ownerPosition, ownerDirection);
 				break;
+			}
+			default : {
+				replaceTower = new ArtilleryTower(field, ownerPosition, ownerDirection);
+				break;
+				// failsafe
 			}
 		}
 		
