@@ -10,7 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Field implements Renderable, MouseInteractable {
+public class Field {
 	
 	private static Image callDisable;
 	private static Image callEnable;
@@ -45,6 +45,12 @@ public class Field implements Renderable, MouseInteractable {
 	private CooldownButton callButton;
 	private CooldownButton lightningButton;
 	
+	private Point2D mouseHoverPosition;
+	private Point2D mousePressPosition;
+	private Point2D mouseReleasePosition;
+	private boolean isPrimaryClicked = false;
+	private boolean isSecondaryClicked = false;
+	
 	
 	/*** Constructor ***/
 	
@@ -56,6 +62,8 @@ public class Field implements Renderable, MouseInteractable {
 				callButtonPosition, 75, 75, 0, true);
 		lightningButton = new CooldownButton(this, lightningDisable, lightningEnable, lightningHover, 
 				lightningButtonPosition, 75, 75, 3600, false);
+		
+		// Constructor is not complete yet
 		
 	}
 	
@@ -87,13 +95,14 @@ public class Field implements Renderable, MouseInteractable {
 					if (!sc.hasNextInt()) {
 						throw new InvalidStageFormatException("expect int waveDuration");
 					}
+					int waveDuration = sc.nextInt();
 					String waveInfo = "";
 					String line = sc.nextLine();
 					while (line != "endwave") {
 						waveInfo += "\t" + line;
 						line = sc.nextLine();
 					}
-					readWave(waveInfo);
+					readWave(waveInfo, waveDuration);
 					break;
 				}
 				default : {
@@ -164,7 +173,7 @@ public class Field implements Renderable, MouseInteractable {
 		sc.close();
 	}
 	
-	private void readWave(String waveInfo) throws InvalidStageFormatException {
+	private void readWave(String waveInfo, int waveDuration) throws InvalidStageFormatException {
 		Scanner sc = new Scanner(waveInfo);
 		ArrayList<Enemy> enemiesInWave = new ArrayList<>();
 		
@@ -192,6 +201,9 @@ public class Field implements Renderable, MouseInteractable {
 			
 		}
 		
+		Wave wave = new Wave(enemiesInWave, waveDuration);
+		storedWave.add(wave);
+		
 		sc.close();
 	}
 	
@@ -210,10 +222,30 @@ public class Field implements Renderable, MouseInteractable {
 	
 	/*** Tick ***/
 
-	@Override
 	public void tick(long now, GraphicsContext gc) {
 		
+		boolean isClickProcessed = false;
+		for (int i = renderableHolder.size() - 1; i >= 0; i--) {
+			Renderable render = renderableHolder.get(i);
+			if (render instanceof MouseInteractable) {
+				MouseInteractable mr = (MouseInteractable) render;
+				mr.hover(mouseHoverPosition);
+				if (!isClickProcessed && isPrimaryClicked) {
+					boolean isProcessable = mr.click(mousePressPosition, mouseReleasePosition);
+					if (!isProcessable) mr.unclick();
+					else isClickProcessed = true;
+				}
+				else if (isClickProcessed && isPrimaryClicked) {
+					mr.unclick();
+				}
+			}
+		}
 		
+		gc.drawImage(fieldImage, 0, 0);
+		
+		for (int i = 0; i < renderableHolder.size(); i++) {
+			renderableHolder.get(i).tick(now, gc);
+		}
 		
 	}
 	
@@ -277,35 +309,18 @@ public class Field implements Renderable, MouseInteractable {
 
 	/*** Mouse ***/
 	
-	@Override
-	public boolean hover(Point2D hoverPosition) {
-		// TODO Auto-generated method stub
-		return false;
+	public void setHover(Point2D hoverPosition) {
+		mouseHoverPosition = hoverPosition;
 	}
 
-	@Override
-	public boolean click(Point2D pressPosition, Point2D releasePosition) {
-		// TODO Auto-generated method stub
-		return false;
+	public void setPrimaryClick(Point2D pressPosition, Point2D releasePosition) {
+		mousePressPosition = pressPosition;
+		mouseReleasePosition = releasePosition;
+		isPrimaryClicked = true;
 	}
-
-	@Override
-	public boolean unclick() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	
-	/*** Compare ***/
-	
-	@Override
-	public double getRenderPriority() {
-		return 0;
-	}
-
-	@Override
-	public int compareTo(Renderable other) {
-		return Double.compare(0, other.getRenderPriority());
+	public void setSecondaryClick() {
+		isSecondaryClicked = true;
 	}
 	
 }

@@ -115,8 +115,8 @@ public class CooldownButton implements Renderable, MouseInteractable {
 	}
 	
 	@Override
-	public boolean unclick() {
-		return false;
+	public void unclick() {
+		
 	}
 	
 	private boolean isInRect(Point2D mouse) {

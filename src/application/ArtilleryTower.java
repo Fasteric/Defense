@@ -71,10 +71,10 @@ public class ArtilleryTower extends Tower {
 	public boolean click(Point2D pressPosition, Point2D releasePosition) {
 		return false;
 	}
-
+	
 	@Override
-	public boolean unclick() {
-		return false;
+	public void unclick() {
+		
 	}
 
 

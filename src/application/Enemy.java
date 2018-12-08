@@ -63,7 +63,7 @@ public abstract class Enemy implements Renderable {
 			return;
 		}
 		
-		if (health <= 0) {
+		if (health <= 0) { // check here
 			dying();
 			return;
 		}

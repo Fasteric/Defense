@@ -107,5 +107,14 @@ public abstract class Tower implements Renderable, MouseInteractable {
 	protected abstract void fire();
 	
 	protected abstract void graphicUpdate(GraphicsContext gc);
+	
+	
+	public Point2D getPosition() {
+		return position;
+	}
+	
+	public int getDirection() {
+		return direction;
+	}
 
 }

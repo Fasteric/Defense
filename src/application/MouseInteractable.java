@@ -8,6 +8,6 @@ public interface MouseInteractable {
 	
 	boolean click(Point2D pressPosition, Point2D releasePosition);
 	
-	boolean unclick();
+	void unclick(); // must be call when click return false
 
 }

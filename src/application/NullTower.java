@@ -6,9 +6,8 @@ import javafx.scene.image.Image;
 
 public class NullTower extends Tower {
 	
-	private static Image[] idle;
-	
-	private static Image constructOption;
+	private static Image idle;
+	private static Image hover;
 	
 	static {
 		// load image;
@@ -23,9 +22,14 @@ public class NullTower extends Tower {
 	private static double radiusX = 0;
 	private static double radiusY = 0;
 	
+	private boolean isHovered;
+	private boolean isClicked;
+	private UpgradeTooltip tooltip;
+	
 	
 	public NullTower(Field field, Point2D position, int direction) {
 		super(field, position, direction, prefiringDelay, postfiringDelay, radiusX, radiusY);
+		tooltip = new UpgradeTooltip(field, this, position);
 	}
 
 	
@@ -33,28 +37,41 @@ public class NullTower extends Tower {
 	protected void graphicUpdate(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height;
-		gc.drawImage(idle[direction], drawX, drawY);
+		if (!isHovered) gc.drawImage(idle, drawX, drawY);
+		else gc.drawImage(hover, drawX, drawY);
 	}
 
 	@Override
 	protected void fire() {
-		
+		// nulltower won't fire
 	}
 
 
 	@Override
 	public boolean hover(Point2D hoverPosition) {
-		return false;
+		isHovered = isMouseInRange(hoverPosition);
+		return isHovered;
 	}
 
 	@Override
 	public boolean click(Point2D pressPosition, Point2D releasePosition) {
-		return false;
+		if (!isMouseInRange(pressPosition) || !isMouseInRange(releasePosition)) {
+			return false;
+		}
+		isClicked = true;
+		field.addRender(tooltip); // tooltip will remove itself
+		return true;
 	}
-
+	
 	@Override
-	public boolean unclick() {
-		return false;
+	public void unclick() {
+		 // tooltip will remove itself
+	}
+	
+	private boolean isMouseInRange(Point2D mousePosition) {
+		double dx = mousePosition.getX() - position.getX();
+		double dy = mousePosition.getY() - position.getY();
+		return dx >= -width / 2 && dx <= width / 2 && dy >= -height && dy <= 0;
 	}
 
 
