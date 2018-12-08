@@ -7,7 +7,8 @@ import javafx.scene.image.Image;
 public class NullTower extends Tower {
 	
 	private static Image[] idle;
-	private static Image[] hover;
+	
+	private static Image constructOption;
 	
 	static {
 		// load image;
@@ -37,7 +38,7 @@ public class NullTower extends Tower {
 
 	@Override
 	protected void fire() {
-		// no firing option
+		
 	}
 
 

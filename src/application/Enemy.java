@@ -16,7 +16,7 @@ public abstract class Enemy implements Renderable {
 	protected int reward;
 	protected int spawnTime;
 	
-	protected int pathIndex = 0; // will be changed to 1 at 'updateDestination'
+	protected int pathIndex = 0;
 	protected Point2D momentum;
 	protected int subpathTickRemaining = 0;
 	

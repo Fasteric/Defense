@@ -10,8 +10,12 @@ public class Zombie extends Enemy {
 	private static double height;
 	
 	private static Image[][] walkingAnimation;
-	private static int walkingAnimationLength;
-	private static int walkingHoldFrame;
+	private static int walkingAnimationLength = 21;
+	private static int walkingHoldFrame = 3;
+	
+	static {
+		// load image
+	}
 	
 	private static int maxHealth = 20;
 	private static double speed = 10;
@@ -43,7 +47,7 @@ public class Zombie extends Enemy {
 
 	@Override
 	public void damage(Damage damage, double amount) {
-
+		health -= amount;
 	}
 
 	

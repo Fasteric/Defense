@@ -4,29 +4,24 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class PrimedTnt extends Projectile {
+public class Arrow extends Projectile {
 	
-	private static Image lit;
-	private static Image unlit;
-	
-	static {
-		// load image;
-	}
-	
+	private static Image arrow;
+
 	private static double width;
 	private static double height;
 	
-	private static double verticalTrajectory = 125;
-	private static int maxLifeTime = 60;
+	private static double verticalTrajectory = 75;
+	private static int maxLifeTime = 15;
 	
-	public PrimedTnt(Field field, Point2D position, Point2D destination) {
+	public Arrow(Field field, Point2D position, Point2D destination) {
 		super(field, position, destination, verticalTrajectory, maxLifeTime);
 	}
 	
 
 	@Override
 	protected void hit() {
-		field.pushDamage(new Damage(Damage.EXPLOSION, field, position));
+		field.pushDamage(new Damage(Damage.ARROW, field, position));
 	}
 	
 	@Override
@@ -34,8 +29,7 @@ public class PrimedTnt extends Projectile {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		if (lifeTime / 10 % 2 == 0) gc.drawImage(unlit, drawX, drawY);
-		else gc.drawImage(lit, drawX, drawY);
+		gc.drawImage(arrow, drawX, drawY);
 	}
 
 	

@@ -4,11 +4,10 @@ import javafx.geometry.Point2D;
 
 public class Damage {
 	
-	
-	
 	private enum Type {
 		ARROW(true, false, false), 
 		EXPLOSION(true, false, false), 
+		POTION(false, true, false),
 		LIGHTNING(false, false, true);
 		
 		public boolean isPhysical;
@@ -24,6 +23,7 @@ public class Damage {
 	
 	public static final Type ARROW = Type.ARROW;
 	public static final Type EXPLOSION = Type.EXPLOSION;
+	public static final Type POTION = Type.POTION;
 	public static final Type LIGHTNING = Type.LIGHTNING;
 	
 	private Type type;
@@ -53,9 +53,10 @@ public class Damage {
 
 	public void process() {
 		switch (type) {
-		case ARROW: processArrowDamage(); break;
-		case EXPLOSION: processExplosionDamage(); break;
-		case LIGHTNING: processLightningDamage(); break;
+			case ARROW : processArrowDamage(); break;
+			case EXPLOSION : processExplosionDamage(); break;
+			case POTION : processPotionDamage(); break;
+			case LIGHTNING : processLightningDamage(); break;
 		}
 	}
 	
@@ -85,6 +86,18 @@ public class Damage {
 			 double sqrDistant = calculateSquaredDistant(enemy);
 			 if (sqrDistant > sqrRange) continue;
 			 double damage = maxDamage * (1 - sqrDistant / 1200);
+			 enemy.damage(this, damage);
+		}
+	}
+	
+	private void processPotionDamage() {
+		double sqrRange = 400;
+		double maxDamage = 20;
+		
+		for (Enemy enemy : field.getEnemyOnField()) {
+			 double sqrDistant = calculateSquaredDistant(enemy);
+			 if (sqrDistant > sqrRange) continue;
+			 double damage = maxDamage * (1 - sqrDistant / 1600);
 			 enemy.damage(this, damage);
 		}
 	}
