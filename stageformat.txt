@@ -1,15 +1,13 @@
 life	20
 money	500
 
-tower	d x y	d x y	d x y	d x y
+tower	direction positionx positiony ...
 
-path	x y	x y	x y	x y	x y
-path	x y	x y	x y	x y	x y	x y
-path	x y	x y
+path	x1 y1 x2 y2 ...
 
 wave	duration
-name pathIndex pathShift spawnTick
-name pathIndex pathShift spawnTick
-name pathIndex pathShift spawnTick
-name pathIndex pathShift spawnTick
+enemyName walkPath walkRandomness relativeSpawnTime
+.
+.
+.
 endwave

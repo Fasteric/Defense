@@ -7,7 +7,7 @@ tower	1 810 230	0 400 240	0 630 230	2 780 115
 path	-10 325	786 315	1150 500
 path	900 -30	700 75	725 275	1150 500
 
-wave	6000
+wave	360
 Zombie 0 0 0
 Zombie 0 -10 120
 Zombie 0 10 120
@@ -19,4 +19,18 @@ Zombie 1 5 60
 Zombie 1 0 120
 Zombie 1 -5 180
 Zombie 1 5 180
+endwave
+
+wave	360
+Zombie 1 0 0
+Zombie 1 -10 120
+Zombie 1 10 120
+Zombie 1 -10 240
+Zombie 1 10 240
+Zombie 0 0 0
+Zombie 0 -5 60
+Zombie 0 5 60
+Zombie 0 0 120
+Zombie 0 -5 180
+Zombie 0 5 180
 endwave
