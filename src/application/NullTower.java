@@ -36,7 +36,7 @@ public class NullTower extends Tower {
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height;
+		double drawY = position.getY() - height / 2;
 		if (!isHovered) gc.drawImage(idle, drawX, drawY);
 		else gc.drawImage(hover, drawX, drawY);
 	}

@@ -32,7 +32,7 @@ public class Field {
 	private ArrayDeque<Wave> storedWave = new ArrayDeque<Wave>();
 	private ArrayList<Path> storedPath = new ArrayList<Path>();
 	
-	private ArrayDeque<Damage> damageQueue = new ArrayDeque<>();
+	private ArrayDeque<Damage> pendingDamage = new ArrayDeque<>();
 
 	private ArrayList<Renderable> renderableHolder = new ArrayList<>();
 	private ArrayList<Enemy> enemyOnField = new ArrayList<>();
@@ -258,14 +258,16 @@ public class Field {
 		}
 		
 		// process damage
-		while (!damageQueue.isEmpty()) {
-			damageQueue.pop().dealDamage();
+		while (!pendingDamage.isEmpty()) {
+			pendingDamage.pop().dealDamage();
 		}
 		
 		// draw background
 		gc.drawImage(fieldImage, 0, 0);
 		
-		
+
+		// draw renderable
+		Collections.sort(renderableHolder);
 		for (int i = 0; i < renderableHolder.size(); i++) {
 			renderableHolder.get(i).tick(now, gc);
 		}
@@ -287,7 +289,6 @@ public class Field {
 	
 	public void addRender(Renderable render) {
 		renderableHolder.add(render);
-		Collections.sort(renderableHolder);
 	}
 	public void removeRender(Renderable render) {
 		renderableHolder.remove(render);
@@ -324,7 +325,7 @@ public class Field {
 	}
 	
 	public void pushDamage(Damage damage) {
-		damageQueue.push(damage);
+		pendingDamage.push(damage);
 	}
 	
 	

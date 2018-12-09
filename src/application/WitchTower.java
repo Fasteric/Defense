@@ -20,9 +20,12 @@ public class WitchTower extends Tower {
 	
 	private static int prefiringDelay = 60;
 	private static int postfiringDelay = 60;
+
+	private static double radius = 100;
+	private static double radiusX = Math.sqrt(1.5) * radius;
+	private static double radiusY = Math.sqrt(0.5) * radius;
 	
-	private static double radiusY = 70;
-	private static double radiusX = 1.732 * radiusY;
+	private static double projectileShift = 75;
 	
 
 	public WitchTower(Field field, Point2D position, int direction) {
@@ -32,7 +35,8 @@ public class WitchTower extends Tower {
 	
 	@Override
 	protected void fire() {
-		ThrowPotion throwPotion = new ThrowPotion(field, position, projectileDestination);
+		Point2D projectileInitial = new Point2D(position.getX(), position.getY() - projectileShift);
+		ThrownPotion throwPotion = new ThrownPotion(field, projectileInitial, projectileDestination);
 		field.addProjectile(throwPotion);
 	}
 	
@@ -40,7 +44,7 @@ public class WitchTower extends Tower {
 	protected void graphicUpdate(GraphicsContext gc) {
 		
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height;
+		double drawY = position.getY() - height / 2;
 		gc.drawImage(idle[direction], drawX, drawY);
 		
 	}

@@ -8,11 +8,11 @@ public class Arrow extends Projectile {
 	
 	private static Image arrow;
 
-	private static double width = 25;
-	private static double height = 25;
+	private static double width = 59;
+	private static double height = 67;
 	
 	static {
-		arrow = new Image("res/projectile/potion.png", width, height, true, false);
+		arrow = new Image("res/explosion/unlit.png", width, height, true, false);
 	}
 	
 	private static double verticalTrajectory = 75;
@@ -40,7 +40,7 @@ public class Arrow extends Projectile {
 	
 	@Override
 	public double getRenderPriority() {
-		return position.getY();
+		return position.getY() + maxLifeTime - lifeTime;
 	}
 
 	@Override

@@ -37,6 +37,7 @@ public abstract class Enemy implements Renderable {
 		this.spawnTime = spawnTime;
 		
 		position = path.getCoordinate(0, pathShift);
+		updateDestination();
 	}
 	
 	public Point2D getPosition() {
@@ -90,10 +91,19 @@ public abstract class Enemy implements Renderable {
 		Point2D destination = path.getCoordinate(pathIndex, pathShift);
 		Point2D subpath = PointOperations.different(position, destination);
 		double length = PointOperations.getSize(subpath);
-		subpathTickRemaining = (int) (60 * length / speed);
+		double angle = PointOperations.getAngle(subpath);
+		double directionalSpeed = speed * isometricScale(angle);
+		subpathTickRemaining = (int) (60 * length / directionalSpeed);
 		double distantPerTick = length / subpathTickRemaining;
 		momentum = PointOperations.normalize(subpath);
 		momentum = PointOperations.scale(momentum, distantPerTick);
+	}
+	
+	private double isometricScale(double angle) {
+		double degrees = Math.toRadians(angle);
+		double sin = Math.sin(degrees);
+		double cos = Math.cos(degrees);
+		return Math.sqrt(3d / 4) / Math.sqrt(1.5 * sin * sin + 0.5 * cos * cos);
 	}
 	
 	protected void updateDirection() {
@@ -132,4 +142,9 @@ public abstract class Enemy implements Renderable {
 	protected abstract void graphicUpdate(GraphicsContext gc);
 	
 	public abstract void damage(Damage damage, double amount);
+	
+	
+	public double getHealth() {
+		return health;
+	}
 }

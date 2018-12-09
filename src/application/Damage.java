@@ -61,8 +61,9 @@ public class Damage {
 	}
 	
 	private void processArrowDamage() {
-		double sqrRange = 100;
-		double damage = 9;
+		double sqrRange = 144;
+		double damage = 5;
+		
 		Enemy nearestEnemy = null;
 		double leastSqrDistant = 0;
 		
@@ -75,36 +76,39 @@ public class Damage {
 			}
 		}
 		
+		if (nearestEnemy == null) return;
 		nearestEnemy.damage(this, damage);
 	}
 	
 	private void processExplosionDamage() {
-		double sqrRange = 900;
-		double maxDamage = 60;
+		double sqrRange = 2500;
+		double stepdown = 3600;
+		double maxDamage = 25;
 		
 		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);
 			 if (sqrDistant > sqrRange) continue;
-			 double damage = maxDamage * (1 - sqrDistant / 1200);
+			 double damage = maxDamage * (1 - sqrDistant / stepdown);
 			 enemy.damage(this, damage);
 		}
 	}
 	
 	private void processPotionDamage() {
-		double sqrRange = 400;
-		double maxDamage = 20;
+		double sqrRange = 900;
+		double stepdown = 1600;
+		double maxDamage = 10;
 		
 		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);
 			 if (sqrDistant > sqrRange) continue;
-			 double damage = maxDamage * (1 - sqrDistant / 1600);
+			 double damage = maxDamage * (1 - sqrDistant / stepdown);
 			 enemy.damage(this, damage);
 		}
 	}
 	
 	private void processLightningDamage() {
 		double sqrRange = 10000;
-		double damage = 12;
+		double damage = 30;
 		
 		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);

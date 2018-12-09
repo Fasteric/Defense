@@ -10,8 +10,8 @@ public class Zombie extends Enemy {
 	private static int walkingLength = 21;
 	private static int walkingHold = 6;
 	
-	private static double width = 30;
-	private static double height = 50;
+	private static double width = 24;
+	private static double height = 40;
 	
 	private static String interpretDirection(int direction) {
 		if (direction == 0 || direction == 4) return "side";
@@ -38,7 +38,7 @@ public class Zombie extends Enemy {
 	}
 	
 	private static int maxHealth = 50;
-	private static double speed = 30;
+	private static double speed = 10;
 	private static int reward = 20;
 
 	public Zombie(Field field, Path path, double pathShift, int spawnTime) {

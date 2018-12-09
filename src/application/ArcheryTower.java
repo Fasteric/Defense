@@ -23,10 +23,13 @@ public class ArcheryTower extends Tower {
 	}
 	
 	private static int prefiringDelay = 15;
-	private static int postfiringDelay = 15;
+	private static int postfiringDelay = 30;
 
-	private static double radiusY = 150;
-	private static double radiusX = 1.732 * radiusY;
+	private static double radius = 200;
+	private static double radiusX = Math.sqrt(1.5) * radius;
+	private static double radiusY = Math.sqrt(0.5) * radius;
+	
+	private static double projectileShift = 30;
 	
 
 	public ArcheryTower(Field field, Point2D position, int direction) {
@@ -36,7 +39,8 @@ public class ArcheryTower extends Tower {
 	
 	@Override
 	protected void fire() {
-		Arrow arrow = new Arrow(field, position, projectileDestination);
+		Point2D projectileInitial = new Point2D(position.getX(), position.getY() - projectileShift);
+		Arrow arrow = new Arrow(field, projectileInitial, projectileDestination);
 		field.addProjectile(arrow);
 	}
 	
@@ -44,23 +48,27 @@ public class ArcheryTower extends Tower {
 	protected void graphicUpdate(GraphicsContext gc) {
 		
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height;
+		double drawY = position.getY() - height / 2;
 		
 		if (isSearching) {
 			gc.drawImage(idle[direction], drawX, drawY);
 			return;
 		}
 		
-		if (lifeCycle >= -15 && lifeCycle < -10) {
-			gc.drawImage(firing[direction][0], drawX, drawY);
+		if (isPrefiring) {
+			if (lifeCycle >= -15 && lifeCycle < -10) {
+				gc.drawImage(firing[direction][0], drawX, drawY);
+			}
+			if (lifeCycle >= -10 && lifeCycle < -5) {
+				gc.drawImage(firing[direction][1], drawX, drawY);
+			}
+			if (lifeCycle >= -5 && lifeCycle < 0) {
+				gc.drawImage(firing[direction][2], drawX, drawY);
+			}
+			return;
 		}
-		if (lifeCycle >= -10 && lifeCycle < -5) {
-			gc.drawImage(firing[direction][1], drawX, drawY);
-		}
-		if (lifeCycle >= -5 && lifeCycle < 0) {
-			gc.drawImage(firing[direction][2], drawX, drawY);
-		}
-		if (lifeCycle >= 0 && lifeCycle < 15) {
+		
+		if (isPostfiring) {
 			gc.drawImage(firing[direction][0], drawX, drawY);
 		}
 		
