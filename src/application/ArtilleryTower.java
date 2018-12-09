@@ -20,7 +20,7 @@ public class ArtilleryTower extends Tower {
 		}
 	}
 	
-	private static int prefiringDelay = 60;
+	private static int prefiringDelay = 120;
 	private static int postfiringDelay = 120;
 
 	private static double radius = 150;
@@ -47,7 +47,7 @@ public class ArtilleryTower extends Tower {
 	protected void graphicUpdate(GraphicsContext gc) {
 		
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height / 2;
+		double drawY = position.getY();
 		
 		if (isSearching) {
 			gc.drawImage(idle[direction], drawX, drawY);

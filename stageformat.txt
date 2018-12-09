@@ -5,9 +5,10 @@ tower	direction positionx positiony ...
 
 path	x1 y1 x2 y2 ...
 
-wave	duration
-enemyName walkPath walkRandomness relativeSpawnTime
+wave	waveDuration
 .
+.
+enemyName walkPath walkRandomness relativeSpawnTime
 .
 .
 endwave

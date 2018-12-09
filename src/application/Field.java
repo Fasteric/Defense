@@ -10,22 +10,17 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Field {
+public class Field implements Holder {
 	
-	private static Image callDisable;
-	private static Image callEnable;
-	private static Image callHover;
-	private static Point2D callButtonPosition = new Point2D(1180, 620);
-	
-	private static Image lightningDisable;
-	private static Image lightningEnable;
-	private static Image lightningHover;
-	private static Point2D lightningButtonPosition = new Point2D(980, 620);
+	private static Image waveCallButtonDisable;
+	private static Image waveCallButtonIdle;
+	private static Image waveCallButtonHover;
 	
 	static {
-		// load image
+		waveCallButtonDisable = new Image("res/button/call_disable.png");
+		waveCallButtonIdle = new Image("res/button/call_idle.png");
+		waveCallButtonHover = new Image("res/button/call_hover.png");
 	}
-	
 	
 	private Image fieldImage;
 
@@ -42,17 +37,19 @@ public class Field {
 	private int life;
 	private int money;
 	
-	private CooldownButton callButton;
-	private CooldownButton lightningButton;
-	
+	RunnableButton waveCallButton;
 	private int lifeTime = 0;
-	private int nextWaveTime = 300;
+	private int nextWaveTime = 0;
+	private static int betweenWaveTime = 1200;
 	
-	private Point2D mouseHoverPosition;
-	private Point2D mousePressPosition;
-	private Point2D mouseReleasePosition;
-	private boolean isPrimaryClicked = false;
-	private boolean isSecondaryClicked = false;
+	private Point2D hoverPosition;
+	private Point2D pressPosition;
+	private Point2D releasePosition;
+	private boolean isClicked = false;
+	
+	TextField lifeText;
+	String lifeFormat = "Life %d";
+	TextField waveText;
 	
 	
 	/*** Constructor ***/
@@ -62,13 +59,13 @@ public class Field {
 		fieldImage = new Image("res/stage/stage.png");
 		
 		readFile("bin/res/stage/stage.txt");
-		/*
-		callButton = new CooldownButton(this, callDisable, callEnable, callHover,
-				callButtonPosition, 75, 75, 0, true);
-		lightningButton = new CooldownButton(this, lightningDisable, lightningEnable, lightningHover, 
-				lightningButtonPosition, 75, 75, 3600, false);
-		*/
-		// Constructor is not complete yet
+		
+		waveCallButton = new RunnableButton(new Point2D(80, 660), 
+				waveCallButtonDisable, waveCallButtonIdle, waveCallButtonHover, 80, 80);
+		waveCallButton.setOnClicked(() -> {
+			callWave();
+		});
+		addRender(waveCallButton);
 		
 		System.out.println("Field Constructed");
 		
@@ -231,33 +228,39 @@ public class Field {
 
 	public void tick(long now, GraphicsContext gc) {
 		
-		// retrieve mouse
+		// process mouse event
+		boolean isHoverProcessed = false;
 		boolean isClickProcessed = false;
 		for (int i = renderableHolder.size() - 1; i >= 0; i--) {
 			Renderable render = renderableHolder.get(i);
 			if (render instanceof MouseInteractable) {
-				MouseInteractable mr = (MouseInteractable) render;
-				mr.hover(mouseHoverPosition);
-				if (!isClickProcessed && isPrimaryClicked) {
-					boolean isProcessable = mr.click(mousePressPosition, mouseReleasePosition);
-					if (!isProcessable) mr.unclick();
-					else isClickProcessed = true; // allow only one object to process click
-				}
-				else if (isClickProcessed && isPrimaryClicked) {
-					mr.unclick();
+				MouseInteractable mouse = (MouseInteractable) render;
+				if (!isHoverProcessed) isHoverProcessed = mouse.hover(hoverPosition); // allow only one object to process hover
+				if (isClicked) {
+					if (!isClickProcessed) {
+						isClickProcessed = mouse.click(pressPosition, releasePosition);
+						if (isClickProcessed) continue; // allow only one object to process click
+					}
+					mouse.unclick();
 				}
 			}
 		}
 		
-		// release wave
-		if (lifeTime >= nextWaveTime && !storedWave.isEmpty()) {
-			System.out.println("DEBUG : Wave Call");
-			nextWaveTime = lifeTime + storedWave.peek().getWaveDuration();
-			storedWave.peek().call(now);
-			storedWave.pop();
+		// wave call and auto wave release
+		if (!storedWave.isEmpty()) {
+			int waveAvailability = lifeTime - nextWaveTime;
+			if (waveAvailability >= betweenWaveTime) {
+				callWave();
+			}
+			else if (waveAvailability >= 0 && waveAvailability < betweenWaveTime) {
+				waveCallButton.enable();
+			}
+		}
+		else {
+			waveCallButton.disable();
 		}
 		
-		// process damage
+		// process pending damage
 		while (!pendingDamage.isEmpty()) {
 			pendingDamage.pop().dealDamage();
 		}
@@ -274,14 +277,21 @@ public class Field {
 		
 		
 		// DEBUG
-		if (isPrimaryClicked) {
+		if (isClicked) {
 			System.out.println("DEBUG : renderableHolder size : " + renderableHolder.size());
 		}
 		
 		lifeTime++;
-		isPrimaryClicked = false; // reset
-		isSecondaryClicked = false;
+		isClicked = false; // reset
 		
+	}
+	
+	private void callWave() {
+		System.out.println("DEBUG : Wave Call");
+		nextWaveTime = lifeTime + storedWave.peek().getWaveDuration();
+		storedWave.peek().call();
+		storedWave.pop();
+		waveCallButton.disable();
 	}
 	
 	
@@ -329,32 +339,45 @@ public class Field {
 	}
 	
 	
-	public void invade(Enemy invader) {
-		life--;
+	public void invade(int cost) {
+		life -= cost;
 		if (life <= 0) {
+			System.out.println("DEBUG : Field.invade : Game Over");
 			// trigger game over
 		}
 	}
 	
-	public void addMoney(int amount) {
-		this.money += amount;
+	public void addMoney(int reward) {
+		money += reward;
 	}
 	
 
 	/*** Mouse ***/
 	
-	public void setHover(Point2D hoverPosition) {
-		mouseHoverPosition = hoverPosition;
+	@Override
+	public boolean hover(Point2D hoverPosition) {
+		this.hoverPosition = hoverPosition;
+		return true;
 	}
 
-	public void setPrimaryClick(Point2D pressPosition, Point2D releasePosition) {
-		mousePressPosition = pressPosition;
-		mouseReleasePosition = releasePosition;
-		isPrimaryClicked = true;
+	@Override
+	public boolean click(Point2D pressPosition, Point2D releasePosition) {
+		this.pressPosition = pressPosition;
+		this.releasePosition = releasePosition;
+		isClicked = true;
+		return true;
 	}
+
+	@Override
+	public void unclick() {
+		isClicked = false;
+	}
+
 	
-	public void setSecondaryClick() {
-		isSecondaryClicked = true;
+	@Override
+	public boolean isFinalized() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

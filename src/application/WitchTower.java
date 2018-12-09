@@ -44,7 +44,7 @@ public class WitchTower extends Tower {
 	protected void graphicUpdate(GraphicsContext gc) {
 		
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height / 2;
+		double drawY = position.getY();
 		gc.drawImage(idle[direction], drawX, drawY);
 		
 	}

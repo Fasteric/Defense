@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 
 public class Lightning implements Renderable {
 	
+	// Unused
+	
 	private static Image lightning[];
 	private static int lightningLength = 6;
 	

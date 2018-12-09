@@ -62,7 +62,7 @@ public class Damage {
 	
 	private void processArrowDamage() {
 		double sqrRange = 144;
-		double damage = 5;
+		double damage = 4;
 		
 		Enemy nearestEnemy = null;
 		double leastSqrDistant = 0;
@@ -80,10 +80,10 @@ public class Damage {
 		nearestEnemy.damage(this, damage);
 	}
 	
-	private void processExplosionDamage() {
-		double sqrRange = 2500;
-		double stepdown = 3600;
-		double maxDamage = 25;
+	private void processPotionDamage() {
+		double sqrRange = 900;
+		double stepdown = 1600;
+		double maxDamage = 8;
 		
 		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);
@@ -93,10 +93,10 @@ public class Damage {
 		}
 	}
 	
-	private void processPotionDamage() {
-		double sqrRange = 900;
-		double stepdown = 1600;
-		double maxDamage = 10;
+	private void processExplosionDamage() {
+		double sqrRange = 2500;
+		double stepdown = 3600;
+		double maxDamage = 12;
 		
 		for (Enemy enemy : field.getEnemyOnField()) {
 			 double sqrDistant = calculateSquaredDistant(enemy);

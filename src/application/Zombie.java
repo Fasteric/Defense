@@ -39,16 +39,17 @@ public class Zombie extends Enemy {
 	
 	private static int maxHealth = 50;
 	private static double speed = 10;
+	private static int cost = 1;
 	private static int reward = 20;
 
 	public Zombie(Field field, Path path, double pathShift, int spawnTime) {
-		super(field, path, pathShift, maxHealth, speed, reward, spawnTime);
+		super(field, path, pathShift, maxHealth, speed, cost, reward, spawnTime);
 	}
 
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
 		
-		if (spawnTime > 0) return;
+		if (lifeTime < spawnTime) return;
 		
 		double drawX = position.getX();
 		double drawY = position.getY() - height;

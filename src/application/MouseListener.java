@@ -10,12 +10,15 @@ public class MouseListener implements EventHandler<MouseEvent> {
 	
 	private Point2D hoverPosition;
 
-	private Point2D tempPressPosition;
-	private Point2D pressPosition;
-	private Point2D releasePosition;
+	private Point2D tempPrimaryPosition;
+	private Point2D primaryPressPosition;
+	private Point2D primaryReleasePosition;
 	private boolean isPrimaryPressed = false;
 	private boolean isPrimaryClicked = false;
-	
+
+	private Point2D tempSecondaryPosition;
+	private Point2D secondaryPressPosition;
+	private Point2D secondaryReleasePosition;
 	private boolean isSecondaryPressed = false;
 	private boolean isSecondaryClicked = false;
 
@@ -26,22 +29,25 @@ public class MouseListener implements EventHandler<MouseEvent> {
 		
 		if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
 			if (event.isPrimaryButtonDown() && !isPrimaryPressed) {
-				tempPressPosition = hoverPosition;
+				tempPrimaryPosition = hoverPosition;
 				isPrimaryPressed = true;
 			}
-			if (event.isSecondaryButtonDown()) {
+			if (event.isSecondaryButtonDown() && !isSecondaryPressed) {
+				tempSecondaryPosition = hoverPosition;
 				isSecondaryPressed = true;
 			}
 		}
 		else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
 			if (!event.isPrimaryButtonDown() && isPrimaryPressed) {
-				pressPosition = tempPressPosition;
-				releasePosition = hoverPosition;
+				primaryPressPosition = tempPrimaryPosition;
+				primaryReleasePosition = hoverPosition;
 				isPrimaryPressed = false;
 				isPrimaryClicked = true;
 				//System.out.println("DEBUG : primaryClicked");
 			}
 			if (!event.isSecondaryButtonDown() && isSecondaryPressed) {
+				secondaryPressPosition = tempSecondaryPosition;
+				secondaryReleasePosition = hoverPosition;
 				isSecondaryPressed = false;
 				isSecondaryClicked = true;
 				//System.out.println("DEBUG : secondaryClicked");
@@ -59,15 +65,19 @@ public class MouseListener implements EventHandler<MouseEvent> {
 	}
 	public Point2D[] retrievePrimaryClickInfo() { // clickInfo reset themself! it can only be retrieved once
 		if (isPrimaryClicked = false) return null;
-		Point2D[] clickInfo = {pressPosition, releasePosition};
+		Point2D[] clickInfo = {primaryPressPosition, primaryReleasePosition};
 		isPrimaryClicked = false;
 		return clickInfo;
 	}
 	
-	public boolean retrieveSecondaryClickInfo() {
-		boolean temp = isSecondaryClicked;
+	public boolean isSecondaryClicked() {
+		return isSecondaryClicked;
+	}
+	public Point2D[] retrieveSecondaryClickInfo() {
+		if (isSecondaryClicked = false) return null;
+		Point2D[] clickInfo = {secondaryPressPosition, secondaryReleasePosition};
 		isSecondaryClicked = false;
-		return temp;
+		return clickInfo;
 	}
 
 }

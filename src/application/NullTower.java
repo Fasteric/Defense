@@ -9,12 +9,25 @@ public class NullTower extends Tower {
 	private static Image idle;
 	private static Image hover;
 	
+	private static Image archeryIdle;
+	private static Image archeryHover;
+	private static Image witchIdle;
+	private static Image witchHover;
+	private static Image artilleryIdle;
+	private static Image artilleryHover;
+	
 	private static double width = 70;
 	private static double height = 90;
 	
 	static {
-		idle = new Image("res/tower/null.png", width, height, true, false);
-		hover = idle;
+		idle = new Image("res/tower/null0.png", width, height, true, false);
+		hover = new Image("res/tower/null1.png", width, height, true, false);
+		archeryIdle = new Image("res/gui/upgrade_archery_idle.png");
+		archeryHover = new Image("res/gui/upgrade_archery_hover.png");
+		witchIdle = new Image("res/gui/upgrade_witch_idle.png");
+		witchHover = new Image("res/gui/upgrade_witch_hover.png");
+		artilleryIdle = new Image("res/gui/upgrade_artillery_idle.png");
+		artilleryHover = new Image("res/gui/upgrade_artillery_hover.png");
 	}
 	
 	private static int prefiringDelay = 2147483647;
@@ -23,21 +36,54 @@ public class NullTower extends Tower {
 	private static double radiusX = 0;
 	private static double radiusY = 0;
 	
-	private boolean isHovered;
-	private UpgradeTooltip tooltip;
+	private boolean isHover;
+	
+	private RunnableButton archeryButton;
+	private RunnableButton witchButton;
+	private RunnableButton artilleryButton;
 	
 	
 	public NullTower(Field field, Point2D position, int direction) {
 		super(field, position, direction, prefiringDelay, postfiringDelay, radiusX, radiusY);
-		tooltip = new UpgradeTooltip(field, this, position);
+		
+		double x = position.getX();
+		double y = position.getY();
+		
+		archeryButton = new RunnableButton(new Point2D(x - 48, y + 24), null, archeryIdle, archeryHover, 48, 48);
+		archeryButton.setOnClicked(() -> {
+			ArcheryTower tower = new ArcheryTower(field, position, direction);
+			field.addTower(tower);
+			field.removeTower(this);
+			field.removeRender(archeryButton);
+		});
+		archeryButton.setOnUnclicked(() -> field.removeRender(archeryButton));
+		
+		witchButton = new RunnableButton(new Point2D(x, y - 24), null, witchIdle, witchHover, 48, 48);
+		witchButton.setOnClicked(() -> {
+			WitchTower tower = new WitchTower(field, position, direction);
+			field.addTower(tower);
+			field.removeTower(this);
+			field.removeRender(witchButton);
+		});
+		witchButton.setOnUnclicked(() -> field.removeRender(witchButton));
+		
+		artilleryButton = new RunnableButton(new Point2D(x + 48, y + 24), null, artilleryIdle, artilleryHover, 48, 48);
+		artilleryButton.setOnClicked(() -> {
+			ArtilleryTower tower = new ArtilleryTower(field, position, direction);
+			field.addTower(tower);
+			field.removeTower(this);
+			field.removeRender(artilleryButton);
+		});
+		artilleryButton.setOnUnclicked(() -> field.removeRender(artilleryButton));
 	}
 
 	
 	@Override
 	protected void graphicUpdate(GraphicsContext gc) {
+		// anchored at top center
 		double drawX = position.getX() - width / 2;
-		double drawY = position.getY() - height / 2;
-		if (!isHovered) gc.drawImage(idle, drawX, drawY);
+		double drawY = position.getY();
+		if (!isHover) gc.drawImage(idle, drawX, drawY);
 		else gc.drawImage(hover, drawX, drawY);
 	}
 
@@ -49,8 +95,8 @@ public class NullTower extends Tower {
 
 	@Override
 	public boolean hover(Point2D hoverPosition) {
-		isHovered = isMouseInRange(hoverPosition);
-		return isHovered;
+		isHover = isMouseInRange(hoverPosition);
+		return isHover;
 	}
 
 	@Override
@@ -58,7 +104,9 @@ public class NullTower extends Tower {
 		if (!isMouseInRange(pressPosition) || !isMouseInRange(releasePosition)) {
 			return false;
 		}
-		field.addRender(tooltip); // tooltip will remove itself
+		field.addRender(archeryButton);
+		field.addRender(witchButton);
+		field.addRender(artilleryButton);
 		return true;
 	}
 	
@@ -70,7 +118,7 @@ public class NullTower extends Tower {
 	private boolean isMouseInRange(Point2D mousePosition) {
 		double dx = mousePosition.getX() - position.getX();
 		double dy = mousePosition.getY() - position.getY();
-		return dx >= -width / 2 && dx <= width / 2 && dy >= -height && dy <= 0;
+		return dx >= -width / 2 && dx <= width / 2 && dy >= height / 2 && dy <= height; // special detection for NullTower
 	}
 
 

@@ -13,7 +13,8 @@ public abstract class Enemy implements Renderable {
 	protected double maxHealth;
 	protected double health;
 	protected double speed;
-	protected int reward;
+	protected int lifeCosted;
+	protected int killReward;
 	protected int spawnTime;
 	
 	protected int pathIndex = 0;
@@ -26,14 +27,15 @@ public abstract class Enemy implements Renderable {
 	/*** Constructor ***/
 	
 	public Enemy(Field field, Path path, double pathShift, 
-			double maxHealth, double speed, int reward, int spawnTime) {
+			double maxHealth, double speed, int lifeCosted, int killReward, int spawnTime) {
 		this.field = field;
 		this.path = path;
 		this.pathShift = pathShift;
 		this.maxHealth = maxHealth;
 		this.health = maxHealth;
 		this.speed = speed;
-		this.reward = reward;
+		this.lifeCosted = lifeCosted;
+		this.killReward = killReward;
 		this.spawnTime = spawnTime;
 		
 		position = path.getCoordinate(0, pathShift);
@@ -41,11 +43,11 @@ public abstract class Enemy implements Renderable {
 	}
 	
 	public Point2D getPosition() {
-		return new Point2D(position.getX(), position.getY());
+		return position;
 	}
 	
 	public Point2D getMomentum() {
-		return new Point2D(momentum.getX(), momentum.getY());
+		return momentum;
 	}
 	
 	
@@ -59,8 +61,8 @@ public abstract class Enemy implements Renderable {
 	
 	protected void logicUpdate(long now) {
 		
-		if (spawnTime > 0) {
-			spawnTime--;
+		if (lifeTime < spawnTime) {
+			// not spawn yet
 			return;
 		}
 		
@@ -88,6 +90,7 @@ public abstract class Enemy implements Renderable {
 	}
 	
 	protected void updateDestination() {
+		// most complex method in this project maybe ?
 		Point2D destination = path.getCoordinate(pathIndex, pathShift);
 		Point2D subpath = PointOperations.different(position, destination);
 		double length = PointOperations.getSize(subpath);
@@ -126,11 +129,11 @@ public abstract class Enemy implements Renderable {
 	
 	protected void invading() {
 		System.out.println("DEBUG : Invading");
-		field.invade(this);
+		field.invade(lifeCosted);
 		despawn();
 	}
 	protected void dying() {
-		field.addMoney(reward);
+		field.addMoney(killReward);
 		//generate smoke
 		despawn();
 	}

@@ -17,7 +17,7 @@ public class Wave {
 	}
 	
 	
-	public int call(long now) {
+	public int call() {
 		for (Enemy enemy : enemies) {
 			field.addEnemy(enemy);
 		}
