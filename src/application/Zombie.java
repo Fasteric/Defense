@@ -13,15 +13,6 @@ public class Zombie extends Enemy {
 	private static double width = 24;
 	private static double height = 40;
 	
-	private static String interpretDirection(int direction) {
-		if (direction == 0 || direction == 4) return "side";
-		if (direction == 1 || direction == 3) return "left";
-		if (direction == 2) return "front";
-		if (direction == 5 || direction == 7) return "right";
-		if (direction == 6) return "back";
-		return "WHAT THE FUCK";
-	}
-	
 	private static boolean needFlip(int direction) {
 		if (direction == 0 || direction == 3 || direction == 5) return true;
 		return false;
@@ -59,7 +50,7 @@ public class Zombie extends Enemy {
 		
 		if (needFlip(direction)) {
 			drawX += width / 2;
-			gc.drawImage(walking[direction][walkFrameIndex], 0, 0, width, height, drawX, drawY, -width, height);
+			gc.drawImage(walking[direction][walkFrameIndex], 0, 0, 300, 500, drawX, drawY, -width, height);
 		}
 		else {
 			drawX -= width / 2;

@@ -12,6 +12,8 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 	private static Image idle = ImageLoader.retrievalIdle;
 	private static Image hover = ImageLoader.retrievalHover;
 	
+	private TextField label = new TextField(new Point2D(0, 0), "", 2);
+	
 	private double width;
 	private double height;
 	
@@ -42,6 +44,10 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 		return temp;
 	}
 	
+	public void setLabel(String label) {
+		this.label.setText(label);
+	}
+	
 	
 	@Override
 	public void tick(long now, GraphicsContext gc) {
@@ -52,6 +58,10 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 		if (isDisabled) gc.drawImage(disable, drawX, drawY, width, height);
 		else if (isHover) gc.drawImage(hover, drawX, drawY, width, height);
 		else gc.drawImage(idle, drawX, drawY, width, height);
+		
+		int length = label.getLength() * 7 * 2;
+		label.setPosition(new Point2D(position.getX() - length / 2, position.getY() - 10));
+		label.tick(now, gc);
 		
 		isHover = false;
 		

@@ -8,7 +8,7 @@ public class TextField implements Renderable {
 	
 	private static int k = 16;
 	
-	private static Image font = ImageLoader.asciiWhite;
+	private Image font = ImageLoader.asciiWhite;
 	
 	private String displayText;
 	private Point2D position;
@@ -21,6 +21,14 @@ public class TextField implements Renderable {
 		this.scale = scale;
 	}
 	
+	public void setPosition(Point2D position) {
+		this.position = position;
+	}
+	
+	public int getLength() {
+		return displayText.length();
+	}
+	
 	public void setText(String displayText) {
 		this.displayText = displayText;
 	}
@@ -31,6 +39,14 @@ public class TextField implements Renderable {
 	
 	public void setBlack() {
 		font = ImageLoader.asciiBlack;
+	}
+	
+	public void setGray() {
+		font = ImageLoader.asciiGray;
+	}
+	
+	public void setWhite() {
+		font = ImageLoader.asciiWhite;
 	}
 
 	

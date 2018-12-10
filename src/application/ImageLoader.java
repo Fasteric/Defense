@@ -36,6 +36,7 @@ public class ImageLoader {
 	public static Image iconEmerald;
 	public static Image iconEnemy;
 	public static Image iconHeart;
+	public static Image menubackground;
 	public static Image retrievalDisable;
 	public static Image retrievalIdle;
 	public static Image retrievalHover;
@@ -120,6 +121,7 @@ public class ImageLoader {
 		iconEmerald = new Image(loader("gui/icon_emerald.png"));
 		iconEnemy = new Image(loader("gui/icon_enemy.png"));
 		iconHeart = new Image(loader("gui/icon_heart.png"));
+		menubackground = new Image(loader("gui/menubackground.png"));
 		retrievalDisable = new Image(loader("gui/retrievalDisable.png"));
 		retrievalIdle = new Image(loader("gui/retrievalIdle.png"));
 		retrievalHover = new Image(loader("gui/retrievalHover.png"));

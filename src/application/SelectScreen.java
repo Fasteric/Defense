@@ -13,12 +13,14 @@ public class SelectScreen implements Holder {
 	public SelectScreen(Ticker ticker) {
 		this.ticker = ticker;
 		play = new RetrievalButton(new Point2D(640, 300), 500, 50);
+		play.setLabel("Play");
 		back = new RetrievalButton(new Point2D(640, 400), 500, 50);
+		back.setLabel("Back");
 	}
 
 	@Override
 	public void tick(long now, GraphicsContext gc) {
-		
+		gc.drawImage(ImageLoader.dirtBackground, 0, 0);
 		play.tick(now, gc);
 		back.tick(now, gc);
 

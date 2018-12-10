@@ -7,6 +7,8 @@ public class TitleScreen implements Holder {
 	
 	private Ticker ticker;
 	
+	private TextField title = new TextField(new Point2D(200, 100), "Overworld", 15);
+	
 	private RetrievalButton select;
 	private RetrievalButton instruction;
 	private RetrievalButton credit;
@@ -17,12 +19,17 @@ public class TitleScreen implements Holder {
 	public TitleScreen (Ticker ticker) {
 		this.ticker = ticker;
 		select = new RetrievalButton(new Point2D(640, 300), 500, 50);
+		select.setLabel("Play");
 		instruction = new RetrievalButton(new Point2D(490, 450), 220, 50);
+		instruction.setLabel("instruction");
 		credit = new RetrievalButton(new Point2D(790, 450), 220, 50);
+		credit.setLabel("credit");
 	}
 
 	@Override
 	public void tick(long now, GraphicsContext gc) {
+		gc.drawImage(ImageLoader.menubackground, 0, 0);
+		title.tick(now, gc);
 		select.tick(now, gc);
 		instruction.tick(now, gc);
 		credit.tick(now, gc);
