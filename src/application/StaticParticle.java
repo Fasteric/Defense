@@ -43,7 +43,7 @@ public class StaticParticle implements Renderable {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		gc.drawImage(frames[frameIndex], drawX, drawY);
+		gc.drawImage(frames[frameIndex], drawX, drawY, width, height);
 		
 		lifeTime++;
 		

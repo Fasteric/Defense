@@ -7,17 +7,15 @@ import javafx.scene.image.Image;
 public class ThrownPotion extends Projectile {
 	
 	private static Image potion;
-	private static Image splash[] = new Image[24];
+	private static Image splash[];
 
 	private static double width = 9;
 	private static double height = 13;
-	private static double particleSize = 200;
+	private static double particleSize = 100;
 	
 	static {
-		potion = new Image("res/potion/potion.png", width, height, true, false);
-		for (int i = 0; i < 24; i++) {
-			splash[i] = new Image("res/potion/splash (" + (i + 1) + ").png", particleSize, particleSize, true, false);
-		}
+		potion = ImageLoader.potion;
+		splash = ImageLoader.splash;
 	}
 	
 	private static double verticalTrajectory = 20;
@@ -40,7 +38,7 @@ public class ThrownPotion extends Projectile {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		gc.drawImage(potion, drawX, drawY);
+		gc.drawImage(potion, drawX, drawY, width, height);
 	}
 
 	

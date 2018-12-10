@@ -9,10 +9,13 @@ public class NullTower extends Tower {
 	private static Image idle;
 	private static Image hover;
 	
+	private static Image archeryDisable;
 	private static Image archeryIdle;
 	private static Image archeryHover;
+	private static Image witchDisable;
 	private static Image witchIdle;
 	private static Image witchHover;
+	private static Image artilleryDisable;
 	private static Image artilleryIdle;
 	private static Image artilleryHover;
 	
@@ -20,14 +23,17 @@ public class NullTower extends Tower {
 	private static double height = 90;
 	
 	static {
-		idle = new Image("res/tower/null0.png", width, height, true, false);
-		hover = new Image("res/tower/null1.png", width, height, true, false);
-		archeryIdle = new Image("res/gui/upgrade_archery_idle.png");
-		archeryHover = new Image("res/gui/upgrade_archery_hover.png");
-		witchIdle = new Image("res/gui/upgrade_witch_idle.png");
-		witchHover = new Image("res/gui/upgrade_witch_hover.png");
-		artilleryIdle = new Image("res/gui/upgrade_artillery_idle.png");
-		artilleryHover = new Image("res/gui/upgrade_artillery_hover.png");
+		idle = ImageLoader.nullTower[0];
+		hover = ImageLoader.nullTower[1];
+		archeryDisable = ImageLoader.upgradeArcheryDisable;
+		archeryIdle = ImageLoader.upgradeArcheryIdle;
+		archeryHover = ImageLoader.upgradeArcheryHover;
+		witchDisable = ImageLoader.upgradeWitchDisable;
+		witchIdle = ImageLoader.upgradeWitchIdle;
+		witchHover = ImageLoader.upgradeWitchHover;
+		artilleryDisable = ImageLoader.upgradeArtilleryDisable;
+		artilleryIdle = ImageLoader.upgradeArtilleryIdle;
+		artilleryHover = ImageLoader.upgradeArtilleryHover;
 	}
 	
 	private static int prefiringDelay = 2147483647;
@@ -49,32 +55,47 @@ public class NullTower extends Tower {
 		double x = position.getX();
 		double y = position.getY();
 		
-		archeryButton = new RunnableButton(new Point2D(x - 48, y + 24), null, archeryIdle, archeryHover, 48, 48);
+		archeryButton = new RunnableButton(new Point2D(x - 48, y + 24), archeryDisable, archeryIdle, archeryHover, 48, 48);
 		archeryButton.setOnClicked(() -> {
 			ArcheryTower tower = new ArcheryTower(field, position, direction);
 			field.addTower(tower);
 			field.removeTower(this);
+			field.removeMoney(ArcheryTower.COST);
 			field.removeRender(archeryButton);
 		});
 		archeryButton.setOnUnclicked(() -> field.removeRender(archeryButton));
+		archeryButton.setOnPreTick((now, gc) -> {
+			if (field.getMoney() < ArcheryTower.COST) archeryButton.disable();
+			else archeryButton.enable();
+		});
 		
-		witchButton = new RunnableButton(new Point2D(x, y - 24), null, witchIdle, witchHover, 48, 48);
+		witchButton = new RunnableButton(new Point2D(x, y - 24), witchDisable, witchIdle, witchHover, 48, 48);
 		witchButton.setOnClicked(() -> {
 			WitchTower tower = new WitchTower(field, position, direction);
 			field.addTower(tower);
 			field.removeTower(this);
+			field.removeMoney(WitchTower.COST);
 			field.removeRender(witchButton);
 		});
 		witchButton.setOnUnclicked(() -> field.removeRender(witchButton));
+		witchButton.setOnPreTick((now, gc) -> {
+			if (field.getMoney() < WitchTower.COST) witchButton.disable();
+			else witchButton.enable();
+		});
 		
-		artilleryButton = new RunnableButton(new Point2D(x + 48, y + 24), null, artilleryIdle, artilleryHover, 48, 48);
+		artilleryButton = new RunnableButton(new Point2D(x + 48, y + 24), artilleryDisable, artilleryIdle, artilleryHover, 48, 48);
 		artilleryButton.setOnClicked(() -> {
 			ArtilleryTower tower = new ArtilleryTower(field, position, direction);
 			field.addTower(tower);
 			field.removeTower(this);
+			field.removeMoney(ArtilleryTower.COST);
 			field.removeRender(artilleryButton);
 		});
 		artilleryButton.setOnUnclicked(() -> field.removeRender(artilleryButton));
+		artilleryButton.setOnPreTick((now, gc) -> {
+			if (field.getMoney() < ArtilleryTower.COST) artilleryButton.disable();
+			else artilleryButton.enable();
+		});
 	}
 
 	
@@ -83,8 +104,8 @@ public class NullTower extends Tower {
 		// anchored at top center
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY();
-		if (!isHover) gc.drawImage(idle, drawX, drawY);
-		else gc.drawImage(hover, drawX, drawY);
+		if (!isHover) gc.drawImage(idle, drawX, drawY, width, height);
+		else gc.drawImage(hover, drawX, drawY, width, height);
 	}
 
 	@Override

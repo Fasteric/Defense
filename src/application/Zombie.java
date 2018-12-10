@@ -28,12 +28,12 @@ public class Zombie extends Enemy {
 	}
 	
 	static {
-		String format = "res/zombie/%s (%d).png";
 		for (int i = 0; i < 8; i++) {
-			String d = interpretDirection(i);
-			for (int j = 0; j < 21; j++) {
-				walking[i][j] = new Image(String.format(format, d, j + 1), width, height, true, false);
-			}
+			if (i == 0 || i == 4) walking[i] = ImageLoader.zombie0;
+			if (i == 1 || i == 3) walking[i] = ImageLoader.zombie1;
+			if (i == 2) walking[i] = ImageLoader.zombie2;
+			if (i == 5 || i == 7) walking[i] = ImageLoader.zombie3;
+			if (i == 6) walking[i] = ImageLoader.zombie4;
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class Zombie extends Enemy {
 		}
 		else {
 			drawX -= width / 2;
-			gc.drawImage(walking[direction][walkFrameIndex], drawX, drawY);
+			gc.drawImage(walking[direction][walkFrameIndex], drawX, drawY, width, height);
 		}
 	
 	}

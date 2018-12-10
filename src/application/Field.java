@@ -17,13 +17,14 @@ public class Field implements Holder {
 	private static Image waveCallButtonHover;
 	
 	static {
-		waveCallButtonDisable = new Image("res/button/call_disable.png");
-		waveCallButtonIdle = new Image("res/button/call_idle.png");
-		waveCallButtonHover = new Image("res/button/call_hover.png");
+		waveCallButtonDisable = ImageLoader.callDisable;
+		waveCallButtonIdle = ImageLoader.callIdle;
+		waveCallButtonHover = ImageLoader.callHover;
 	}
 	
 	private Image fieldImage;
-
+	private File fieldFile;
+	
 	private ArrayDeque<Wave> storedWave = new ArrayDeque<Wave>();
 	private ArrayList<Path> storedPath = new ArrayList<Path>();
 	
@@ -47,6 +48,8 @@ public class Field implements Holder {
 	private Point2D releasePosition;
 	private boolean isClicked = false;
 	
+	private boolean isStarted = false;
+	
 	TextField lifeText;
 	String lifeFormat = "Life %d";
 	TextField waveText;
@@ -56,9 +59,14 @@ public class Field implements Holder {
 	
 	public Field(String path) throws Exception {
 		
-		fieldImage = new Image("res/stage/stage.png");
+		path = "stage/0/";
 		
-		readFile("bin/res/stage/stage.txt");
+		fieldImage = new Image(ClassLoader.getSystemResource(path + "stage.png").toString());
+		String loadString = ClassLoader.getSystemResource(path + "stage.txt").toString();
+		fieldFile = new File(loadString.replaceAll("file:/", ""));
+		Scanner sc = new Scanner(fieldFile);
+		
+		readFile(fieldFile);
 		
 		waveCallButton = new RunnableButton(new Point2D(80, 660), 
 				waveCallButtonDisable, waveCallButtonIdle, waveCallButtonHover, 80, 80);
@@ -71,8 +79,7 @@ public class Field implements Holder {
 		
 	}
 	
-	private void readFile(String path) throws Exception {
-		File file = new File(path);
+	private void readFile(File file) throws Exception {
 		Scanner sc = new Scanner(file);
 		
 		while (sc.hasNext()) {
@@ -346,9 +353,16 @@ public class Field implements Holder {
 			// trigger game over
 		}
 	}
+
 	
-	public void addMoney(int reward) {
-		money += reward;
+	public int getMoney() {
+		return money;
+	}
+	public void addMoney(int amount) {
+		money += amount;
+	}
+	public void removeMoney(int amount) {
+		money -= amount;
 	}
 	
 

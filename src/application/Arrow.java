@@ -12,7 +12,7 @@ public class Arrow extends Projectile {
 	private static double height = 67;
 	
 	static {
-		arrow = new Image("res/explosion/unlit.png", width, height, true, false);
+		arrow = ImageLoader.unlit;
 	}
 	
 	private static double verticalTrajectory = 75;
@@ -34,7 +34,7 @@ public class Arrow extends Projectile {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		gc.drawImage(arrow, drawX, drawY);
+		gc.drawImage(arrow, drawX, drawY, width, height);
 	}
 
 	

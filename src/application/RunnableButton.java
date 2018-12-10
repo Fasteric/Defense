@@ -18,9 +18,11 @@ public class RunnableButton implements Renderable, MouseInteractable {
 	private boolean isDisabled = false;
 	private boolean isHover = false;
 	
-	private Runnable hoverEvent = () -> {};
-	private Runnable clickEvent = () -> {}; // WTF notation
+	private Runnable hoverEvent = () -> {}; // WTF notation
+	private Runnable clickEvent = () -> {};
 	private Runnable unclickEvent = () -> {};
+	private Tickable preTick = (now, gc) -> {};
+	private Tickable postTick = (now, gc) -> {};
 	
 	
 	public RunnableButton(Point2D position, Image disable, Image idle, Image hover, double width, double height) {
@@ -51,10 +53,18 @@ public class RunnableButton implements Renderable, MouseInteractable {
 	public void setOnUnclicked(Runnable unclickEvent) {
 		this.unclickEvent = unclickEvent;
 	}
+	public void setOnPreTick(Tickable preTick) {
+		this.preTick = preTick;
+	}
+	public void setOnPostTick(Tickable postTick) {
+		this.postTick = postTick;
+	}
 	
 	
 	@Override
 	public void tick(long now, GraphicsContext gc) {
+		
+		preTick.tick(now, gc);
 		
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
@@ -62,6 +72,8 @@ public class RunnableButton implements Renderable, MouseInteractable {
 		if (isDisabled) gc.drawImage(disable, drawX, drawY);
 		else if (isHover) gc.drawImage(hover, drawX, drawY);
 		else gc.drawImage(idle, drawX, drawY);
+		
+		postTick.tick(now, gc);
 		
 		isHover = false;
 		

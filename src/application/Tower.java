@@ -80,18 +80,26 @@ public abstract class Tower implements Renderable, MouseInteractable {
 	
 	protected boolean search() {
 		boolean isFound = false;
+		Enemy lowestHealthEnemy = null;
+		double lowestHealth = -1;
 		ArrayList<Enemy> enemiesInRange = new ArrayList<>();
 		for (Enemy enemy : field.getEnemyOnField()) {
 			if (isInFiringRange(enemy.getPosition())) {
 				enemiesInRange.add(enemy);
-				isFound = true;
+				if (!isFound) {
+					lowestHealthEnemy = enemy;
+					lowestHealth = enemy.getHealth();
+					isFound = true;
+				}
+				else if (enemy.getHealth() < lowestHealth) {
+					lowestHealthEnemy = enemy;
+					lowestHealth = enemy.getHealth();
+				}
 			}
 		}
 		if (isFound) {
-			int index = random.nextInt(enemiesInRange.size());
-			Enemy enemy = enemiesInRange.get(index);
-			Point2D scaledMomentum = PointOperations.scale(enemy.getMomentum(), prefiringDelay);
-			projectileDestination = PointOperations.add(enemy.getPosition(), scaledMomentum);
+			Point2D scaledMomentum = PointOperations.scale(lowestHealthEnemy.getMomentum(), prefiringDelay);
+			projectileDestination = PointOperations.add(lowestHealthEnemy.getPosition(), scaledMomentum);
 		}
 		return isFound;
 	}

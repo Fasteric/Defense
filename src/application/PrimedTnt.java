@@ -16,11 +16,10 @@ public class PrimedTnt extends Projectile {
 	private static double particleSize = 100;
 	
 	static {
-		lit = new Image("res/explosion/lit.png", width, height, true, false);
-		unlit = new Image("res/explosion/unlit.png", width, height, true, false);
-		for (int i = 0; i < 24; i++) {
-			explosion[i] = new Image("res/explosion/explosion (" + (i + 1) + ").png", particleSize, particleSize, true, false);
-		}
+		lit = ImageLoader.lit;
+		unlit = ImageLoader.unlit;
+		explosion = ImageLoader.explosion;
+		
 	}
 	
 	private static double verticalTrajectory = 125;
@@ -43,8 +42,8 @@ public class PrimedTnt extends Projectile {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		if (lifeTime / 10 % 2 == 0) gc.drawImage(unlit, drawX, drawY);
-		else gc.drawImage(lit, drawX, drawY);
+		if (lifeTime / 10 % 2 == 0) gc.drawImage(unlit, drawX, drawY, width, height);
+		else gc.drawImage(lit, drawX, drawY, width, height);
 	}
 
 	
