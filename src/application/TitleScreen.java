@@ -16,9 +16,9 @@ public class TitleScreen implements Holder {
 	
 	public TitleScreen (Ticker ticker) {
 		this.ticker = ticker;
-		select = new RetrievalButton(new Point2D(640, 300), null, null, null, 500, 100);
-		instruction = new RetrievalButton(new Point2D(580, 450), null, null, null, 220, 100);
-		credit = new RetrievalButton(new Point2D(700, 450), null, null, null, 220, 100);
+		select = new RetrievalButton(new Point2D(640, 300), 500, 50);
+		instruction = new RetrievalButton(new Point2D(490, 450), 220, 50);
+		credit = new RetrievalButton(new Point2D(790, 450), 220, 50);
 	}
 
 	@Override
@@ -29,12 +29,15 @@ public class TitleScreen implements Holder {
 		isInstruction = instruction.retrieveClickStatus();
 		isCredit = credit.retrieveClickStatus();
 		if (isInstruction) {
+			System.out.println("DEBUG : Draw Instruction");
 			//gc.drawImage(instruction);
 		}
 		else if (isCredit) {
+			System.out.println("DEBUG : Draw Credt");
 			//gc.drawImage(credit);
 		}
 		else if (select.retrieveClickStatus()) {
+			System.out.println("DEBUG : Select");
 			ticker.setState(Ticker.State.SELECT);
 		}
 	}

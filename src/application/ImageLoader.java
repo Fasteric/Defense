@@ -36,6 +36,9 @@ public class ImageLoader {
 	public static Image iconEmerald;
 	public static Image iconEnemy;
 	public static Image iconHeart;
+	public static Image retrievalDisable;
+	public static Image retrievalIdle;
+	public static Image retrievalHover;
 	public static Image upgradeHover;
 	public static Image upgradeIdle;
 	public static Image upgradeArcheryDisable;
@@ -59,11 +62,14 @@ public class ImageLoader {
 	public static Image[] witchTower = new Image[4];
 	public static Image[][] artilleryTower = new Image[4][2];
 	
-	public static Image[] zombie0 = new Image[21];
 	public static Image[] zombie1 = new Image[21];
 	public static Image[] zombie2 = new Image[21];
-	public static Image[] zombie3 = new Image[21];
 	public static Image[] zombie4 = new Image[21];
+	public static Image[] zombie6 = new Image[21];
+	public static Image[] zombie7 = new Image[21];
+	
+	
+	// unused and will never be used
 	
 	public static Image[] husk0;
 	public static Image[] husk1;
@@ -101,7 +107,8 @@ public class ImageLoader {
 		asciiWhite = new Image(loader("font/ascii_white.png"));
 		asciiGray = new Image(loader("font/ascii_gray.png"));
 		asciiBlack = new Image(loader("font/ascii_black.png"));
-		
+
+		blankpane = new Image(loader("gui/blankpane.png"));
 		callDisable = new Image(loader("gui/call_disable.png"));
 		callIdle = new Image(loader("gui/call_idle.png"));
 		callHover = new Image(loader("gui/call_hover.png"));
@@ -110,10 +117,12 @@ public class ImageLoader {
 		channellingHover = new Image(loader("gui/channelling_hover.png"));
 		dirtBackground = new Image(loader("gui/dirtbackground.png"));
 		hangingSign = new Image(loader("gui/hangingsign.png"));
-		blankpane = new Image(loader("gui/blankpanel.png"));
 		iconEmerald = new Image(loader("gui/icon_emerald.png"));
 		iconEnemy = new Image(loader("gui/icon_enemy.png"));
 		iconHeart = new Image(loader("gui/icon_heart.png"));
+		retrievalDisable = new Image(loader("gui/retrievalDisable.png"));
+		retrievalIdle = new Image(loader("gui/retrievalIdle.png"));
+		retrievalHover = new Image(loader("gui/retrievalHover.png"));
 		upgradeArcheryDisable = new Image(loader("gui/upgrade_archery_disable.png"));
 		upgradeArcheryIdle = new Image(loader("gui/upgrade_archery_idle.png"));
 		upgradeArcheryHover = new Image(loader("gui/upgrade_archery_hover.png"));
@@ -145,13 +154,21 @@ public class ImageLoader {
 		}
 		
 		for (int i = 0; i < 21; i++) {
-			
+			zombie1[i] = new Image(loader("zombie/left(" + (i + 1) + ").png"));
+			zombie2[i] = new Image(loader("zombie/front(" + (i + 1) + ").png")); 
+			zombie4[i] = new Image(loader("zombie/side(" + (i + 1) + ").png"));
+			zombie6[i] = new Image(loader("zombie/back(" + (i + 1) + ").png"));
+			zombie7[i] = new Image(loader("zombie/right(" + (i + 1) + ").png"));
 		}
 		
 	}
 	
 	public static String loader(String path) {
 		return ClassLoader.getSystemResource(path).toString();
+	}
+	
+	public static void invoke() {
+		// load pls
 	}
 
 }

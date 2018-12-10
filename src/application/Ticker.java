@@ -12,19 +12,22 @@ public class Ticker extends AnimationTimer {
 	}
 	
 	private State state = State.TITLE;
-	private State lastState = State.SELECT;
+	boolean stateChange = true;
 	
 	private Canvas canvas;
 	private MouseListener mouse;
 	private Holder current;
 	
 	public Ticker(Canvas canvas, MouseListener mouse) {
+		ImageLoader.invoke();
 		this.canvas = canvas;
 		this.mouse = mouse;
 	}
 
 	@Override
 	public void handle(long now) {
+		
+		//System.out.println(state);
 		
 		//System.out.println("tick");
 		
@@ -41,33 +44,43 @@ public class Ticker extends AnimationTimer {
 		
 		
 		if (state == State.TITLE) {
-			if (lastState != state) {
+			if (stateChange) {
 				current = new TitleScreen(this);
 				System.out.println("DEBUG : Construct TitleScreen");
+				stateChange = false;
 			}
 		}
 		
 		else if (state == State.SELECT) {
-			if (lastState != state) {
+			if (stateChange) {
 				current = new SelectScreen(this);
 				System.out.println("DEBUG : Construct SelectScreen");
+				stateChange = false;
 			}
 		}
 		
 		else if (state == State.FIELD) {
-			
+			if (stateChange) {
+				try {
+					current = new Field(this, "");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				stateChange = false;
+			}
 		}
 		
 		current.hover(mouse.getHoverPosition());
 		if (isPrimaryClicked) current.click(primaryPressPosition, primaryReleasePosition);
 		current.tick(now, gc);
 		
-		lastState = state;
-		
 	}
 	
 	public void setState(State state) {
+		System.out.println("DEBUG : set state");
 		this.state = state;
+		stateChange = true;
 	}
 
 }

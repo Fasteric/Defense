@@ -8,9 +8,9 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 	
 	private Point2D position;
 	
-	private Image disable;
-	private Image idle;
-	private Image hover;
+	private static Image disable = ImageLoader.retrievalDisable;
+	private static Image idle = ImageLoader.retrievalIdle;
+	private static Image hover = ImageLoader.retrievalHover;
 	
 	private double width;
 	private double height;
@@ -20,11 +20,8 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 	private boolean isClicked = false;
 	
 	
-	public RetrievalButton(Point2D position, Image disable, Image idle, Image hover, double width, double height) {
+	public RetrievalButton(Point2D position, double width, double height) {
 		this.position = position;
-		this.disable = disable;
-		this.idle = idle;
-		this.hover = hover;
 		this.width = width;
 		this.height = height;
 	}
@@ -52,9 +49,9 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		if (isDisabled) gc.drawImage(disable, drawX, drawY);
-		else if (isHover) gc.drawImage(hover, drawX, drawY);
-		else gc.drawImage(idle, drawX, drawY);
+		if (isDisabled) gc.drawImage(disable, drawX, drawY, width, height);
+		else if (isHover) gc.drawImage(hover, drawX, drawY, width, height);
+		else gc.drawImage(idle, drawX, drawY, width, height);
 		
 		isHover = false;
 		

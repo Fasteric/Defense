@@ -30,11 +30,11 @@ public class Zombie extends Enemy {
 	static {
 		// load image
 		for (int i = 0; i < 8; i++) {
-			if (i == 0 || i == 4) walking[i] = ImageLoader.zombie0;
+			if (i == 0 || i == 4) walking[i] = ImageLoader.zombie4;
 			if (i == 1 || i == 3) walking[i] = ImageLoader.zombie1;
 			if (i == 2) walking[i] = ImageLoader.zombie2;
-			if (i == 5 || i == 7) walking[i] = ImageLoader.zombie3;
-			if (i == 6) walking[i] = ImageLoader.zombie4;
+			if (i == 5 || i == 7) walking[i] = ImageLoader.zombie7;
+			if (i == 6) walking[i] = ImageLoader.zombie6;
 		}
 	}
 	
