@@ -69,9 +69,9 @@ public class RunnableButton implements Renderable, MouseInteractable {
 		double drawX = position.getX() - width / 2;
 		double drawY = position.getY() - height / 2;
 		
-		if (isDisabled) gc.drawImage(disable, drawX, drawY);
-		else if (isHover) gc.drawImage(hover, drawX, drawY);
-		else gc.drawImage(idle, drawX, drawY);
+		if (isDisabled) gc.drawImage(disable, drawX, drawY, width, height);
+		else if (isHover) gc.drawImage(hover, drawX, drawY, width, height);
+		else gc.drawImage(idle, drawX, drawY, width, height);
 		
 		postTick.tick(now, gc);
 		
@@ -82,7 +82,7 @@ public class RunnableButton implements Renderable, MouseInteractable {
 	
 	@Override
 	public boolean hover(Point2D hoverPosition) {
-		if (!isInRange(hoverPosition)) {
+		if (!isMouseInRange(hoverPosition)) {
 			isHover = false;
 			return false;
 		}
@@ -94,7 +94,7 @@ public class RunnableButton implements Renderable, MouseInteractable {
 	@Override
 	public boolean click(Point2D pressPosition, Point2D releasePosition) {
 		if (isDisabled) return false;
-		if (!isInRange(pressPosition) || !isInRange(releasePosition)) return false;
+		if (!isMouseInRange(pressPosition) || !isMouseInRange(releasePosition)) return false;
 		clickEvent.run();
 		return true;
 	}
@@ -104,7 +104,7 @@ public class RunnableButton implements Renderable, MouseInteractable {
 		unclickEvent.run();
 	}
 	
-	private boolean isInRange(Point2D mousePosition) {
+	private boolean isMouseInRange(Point2D mousePosition) {
 		double dx = mousePosition.getX() - position.getX();
 		double dy = mousePosition.getY() - position.getY();
 		return dx >= -width / 2 && dx <= width / 2 && dy >= -height / 2 && dy <= height / 2;

@@ -12,6 +12,8 @@ import javafx.scene.image.Image;
 
 public class Field implements Holder {
 	
+	private Ticker ticker;
+	
 	private static Image waveCallButtonDisable;
 	private static Image waveCallButtonIdle;
 	private static Image waveCallButtonHover;
@@ -50,30 +52,44 @@ public class Field implements Holder {
 	
 	private boolean isStarted = false;
 	
-	TextField lifeText;
-	String lifeFormat = "Life %d";
-	TextField waveText;
+	private TextField lifeText = new TextField(new Point2D(60, 25), "", 2);
+	private String lifeFormat = "Life %d";
+	private TextField waveText = new TextField(new Point2D(60, 50), "", 2);
+	private int waveSize;
+	private String waveFormat;
+	private TextField moneyText = new TextField(new Point2D(60, 75), "", 2);
+	private TextField callText = new TextField(new Point2D(10, 690), " Wave call ", 2);
+	private String callFormat = "Next wave %d";
 	
 	
 	/*** Constructor ***/
 	
-	public Field(String path) throws Exception {
+	public Field(Ticker ticker, String path) throws Exception {
+		
+		this.ticker = ticker;
 		
 		path = "stage/0/";
 		
 		fieldImage = new Image(ClassLoader.getSystemResource(path + "stage.png").toString());
 		String loadString = ClassLoader.getSystemResource(path + "stage.txt").toString();
 		fieldFile = new File(loadString.replaceAll("file:/", ""));
+		//getClass().getClassLoader().getResource("myFile.txt");
 		Scanner sc = new Scanner(fieldFile);
 		
 		readFile(fieldFile);
 		
-		waveCallButton = new RunnableButton(new Point2D(80, 660), 
-				waveCallButtonDisable, waveCallButtonIdle, waveCallButtonHover, 80, 80);
+		// wave call button
+		waveCallButton = new RunnableButton(new Point2D(90, 650), 
+				waveCallButtonDisable, waveCallButtonIdle, waveCallButtonHover, 48, 48);
 		waveCallButton.setOnClicked(() -> {
 			callWave();
+			isStarted = true;
 		});
 		addRender(waveCallButton);
+		
+		//text
+		waveSize = storedWave.size();
+		waveFormat = "Wave %d/" + waveSize;
 		
 		System.out.println("Field Constructed");
 		
@@ -272,8 +288,23 @@ public class Field implements Holder {
 			pendingDamage.pop().dealDamage();
 		}
 		
-		// draw background
+		// draw ui
 		gc.drawImage(fieldImage, 0, 0);
+		gc.drawImage(ImageLoader.blankpane, 7, 600);
+		gc.drawImage(ImageLoader.hangingSign, 20, -40);
+		lifeText.setText(String.format(lifeFormat, life));
+		lifeText.tick(now, gc);
+		gc.drawImage(ImageLoader.iconHeart, 30, 25);
+		waveText.setText(String.format(waveFormat, waveSize - storedWave.size()));
+		waveText.tick(now, gc);
+		gc.drawImage(ImageLoader.iconEnemy, 30, 50);
+		moneyText.setText(Integer.toString(money));
+		moneyText.tick(now, gc);
+		gc.drawImage(ImageLoader.iconEmerald, 30, 75);
+		if (storedWave.size() > 0) {
+			if (isStarted) callText.setText(String.format(callFormat, (lifeTime - nextWaveTime - betweenWaveTime) / -60));
+			callText.tick(now, gc);
+		}
 		
 
 		// draw renderable
@@ -288,7 +319,9 @@ public class Field implements Holder {
 			System.out.println("DEBUG : renderableHolder size : " + renderableHolder.size());
 		}
 		
-		lifeTime++;
+		if (isStarted) {
+			lifeTime++;
+		}
 		isClicked = false; // reset
 		
 	}
@@ -385,13 +418,6 @@ public class Field implements Holder {
 	@Override
 	public void unclick() {
 		isClicked = false;
-	}
-
-	
-	@Override
-	public boolean isFinalized() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 	
 }

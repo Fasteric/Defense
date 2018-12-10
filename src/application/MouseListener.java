@@ -8,7 +8,7 @@ public class MouseListener implements EventHandler<MouseEvent> {
 	
 	// store only latest hoverPosition and valid click
 	
-	private Point2D hoverPosition;
+	private Point2D hoverPosition = new Point2D(0, 0);
 
 	private Point2D tempPrimaryPosition;
 	private Point2D primaryPressPosition;

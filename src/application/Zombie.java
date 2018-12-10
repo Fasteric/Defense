@@ -28,6 +28,7 @@ public class Zombie extends Enemy {
 	}
 	
 	static {
+		// load image
 		for (int i = 0; i < 8; i++) {
 			if (i == 0 || i == 4) walking[i] = ImageLoader.zombie0;
 			if (i == 1 || i == 3) walking[i] = ImageLoader.zombie1;

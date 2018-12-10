@@ -63,7 +63,7 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 	
 	@Override
 	public boolean hover(Point2D hoverPosition) {
-		if (!isInRange(hoverPosition)) {
+		if (!isMouseInRange(hoverPosition)) {
 			isHover = false;
 			return false;
 		}
@@ -73,7 +73,7 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 
 	@Override
 	public boolean click(Point2D pressPosition, Point2D releasePosition) {
-		if (!isInRange(pressPosition) || !isInRange(releasePosition)) return false;
+		if (!isMouseInRange(pressPosition) || !isMouseInRange(releasePosition)) return false;
 		if (!isDisabled) isClicked = true;
 		return true;
 	}
@@ -83,7 +83,7 @@ public class RetrievalButton implements Renderable, MouseInteractable {
 		
 	}
 	
-	private boolean isInRange(Point2D mousePosition) {
+	private boolean isMouseInRange(Point2D mousePosition) {
 		double dx = mousePosition.getX() - position.getX();
 		double dy = mousePosition.getY() - position.getY();
 		return dx >= -width / 2 && dx <= width / 2 && dy >= -height / 2 && dy <= height / 2;

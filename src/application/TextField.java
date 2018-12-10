@@ -8,7 +8,7 @@ public class TextField implements Renderable {
 	
 	private static int k = 16;
 	
-	private static Image font = new Image("res/font/ascii.png", 128 * k, 128 * k, true, false);
+	private static Image font = ImageLoader.asciiWhite;
 	
 	private String displayText;
 	private Point2D position;
@@ -28,6 +28,10 @@ public class TextField implements Renderable {
 	public void setScale(double scale) {
 		this.scale = scale;
 	}
+	
+	public void setBlack() {
+		font = ImageLoader.asciiBlack;
+	}
 
 	
 	@Override
@@ -43,11 +47,6 @@ public class TextField implements Renderable {
 			gc.drawImage(font, sx * k, sy * k, 8 * k, 8 * k, dx, dy, size, size);
 			dx += scale * 7;
 		}
-	}
-	
-	private void get(char i) {
-		int sx = i % 16;
-		int sy = i / 16;
 	}
 
 	

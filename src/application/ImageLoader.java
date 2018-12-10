@@ -24,6 +24,7 @@ public class ImageLoader {
 	
 	public static Image baseHover;
 	public static Image baseIdle;
+	public static Image blankpane;
 	public static Image callDisable;
 	public static Image callIdle;
 	public static Image callHover;
@@ -107,8 +108,9 @@ public class ImageLoader {
 		channellingDisable = new Image(loader("gui/channelling_disable.png"));
 		channellingIdle = new Image(loader("gui/channelling_idle.png"));
 		channellingHover = new Image(loader("gui/channelling_hover.png"));
-		//dirtBackground = new Image(loader("gui/dirtbackground.png"));
-		//hangingSign = new Image(loader("gui/hangingsign.png"));
+		dirtBackground = new Image(loader("gui/dirtbackground.png"));
+		hangingSign = new Image(loader("gui/hangingsign.png"));
+		blankpane = new Image(loader("gui/blankpanel.png"));
 		iconEmerald = new Image(loader("gui/icon_emerald.png"));
 		iconEnemy = new Image(loader("gui/icon_enemy.png"));
 		iconHeart = new Image(loader("gui/icon_heart.png"));
@@ -140,6 +142,10 @@ public class ImageLoader {
 			for (int j = 0; j < 2; j++) {
 				artilleryTower[i][j] = new Image(loader("tower/tnt" + i + "" + j + ".png"));
 			}
+		}
+		
+		for (int i = 0; i < 21; i++) {
+			
 		}
 		
 	}

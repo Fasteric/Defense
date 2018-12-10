@@ -7,15 +7,16 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ticker extends AnimationTimer {
 	
-	private enum State {
-		MENU, FIELD
+	public enum State {
+		TITLE, SELECT, FIELD
 	}
 	
-	private State state = State.MENU;
+	private State state = State.TITLE;
+	private State lastState = State.SELECT;
 	
 	private Canvas canvas;
 	private MouseListener mouse;
-	private Field currentField;
+	private Holder current;
 	
 	public Ticker(Canvas canvas, MouseListener mouse) {
 		this.canvas = canvas;
@@ -29,7 +30,6 @@ public class Ticker extends AnimationTimer {
 		
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		
-		
 		boolean isPrimaryClicked = mouse.isPrimaryClicked();
 		Point2D primaryPressPosition = null;
 		Point2D primaryReleasePosition = null;
@@ -40,27 +40,34 @@ public class Ticker extends AnimationTimer {
 		}
 		
 		
-		if (state == State.MENU) {
-			if (isPrimaryClicked) { // trigger load field
-				System.out.println("Load Field Triggered");
-				try {
-					currentField = new Field("File Path");
-					state = State.FIELD;
-				}
-				catch (Exception e) {
-					// TODO Auto-generated catch block
-					boolean check = e instanceof InvalidStageFormatException;
-					e.printStackTrace();
-				}
+		if (state == State.TITLE) {
+			if (lastState != state) {
+				current = new TitleScreen(this);
+				System.out.println("DEBUG : Construct TitleScreen");
+			}
+		}
+		
+		else if (state == State.SELECT) {
+			if (lastState != state) {
+				current = new SelectScreen(this);
+				System.out.println("DEBUG : Construct SelectScreen");
 			}
 		}
 		
 		else if (state == State.FIELD) {
-			currentField.hover(mouse.getHoverPosition());
-			if (isPrimaryClicked) currentField.click(primaryPressPosition, primaryReleasePosition);
-			currentField.tick(now, gc);
+			
 		}
 		
+		current.hover(mouse.getHoverPosition());
+		if (isPrimaryClicked) current.click(primaryPressPosition, primaryReleasePosition);
+		current.tick(now, gc);
+		
+		lastState = state;
+		
+	}
+	
+	public void setState(State state) {
+		this.state = state;
 	}
 
 }
